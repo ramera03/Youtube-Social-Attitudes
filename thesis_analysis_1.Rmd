@@ -1,0 +1,16 @@
+---
+title: "thesis_analysis_1"
+author: "Reilly"
+date: "2025-01-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#installing quarto
+library(quarto)
+quarto::quarto_add_extension("wjschne/apaquarto")
+```
