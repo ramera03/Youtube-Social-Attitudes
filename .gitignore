@@ -1,5 +1,13 @@
-#Local only files
-Desktop/localonly
+# Local only files (does this count as a directory?)
+#File located in desktop folder
+d2mr_thesis1/localonly
+
+# Types of files not for GitHub
+*.heic
+*.docx
+
+# Ignore This File
+/github-recovery-codes.txt
 
 # History files
 .Rhistory
