@@ -8,6 +8,6 @@ D2MR repo for my thesis data analysis
 Survey data from parent and child questionnaires, largely Likert scale and multiple choice numerical and categorical data. 
 
 ## File Tree (hypothetical)
-Files will be labeled with thesis_analysis_[descriptor], where each label will describe the step in question. 
+Files will be labeled with thesis_analysis_[descriptor], where each label will describe the step in question (e.g. thesis_analysis_cleaning).
 Data files will be labeled either parent_survey or child_survey.
 
