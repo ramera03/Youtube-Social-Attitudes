@@ -1,5 +1,5 @@
-# Local only files (does this count as a directory?)
-#File located in desktop folder
+# Local only files
+# Contains: private data, clutter files
 d2mr_thesis1/localonly
 
 # Types of files not for GitHub
