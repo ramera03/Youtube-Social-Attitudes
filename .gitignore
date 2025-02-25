@@ -1,6 +1,6 @@
 # Local only files
 # Contains: private data, clutter files
-/localonly
+localonly/
 
 # Types of files not for GitHub
 *.heic
