@@ -1,6 +1,6 @@
 # Local only files
 # Contains: private data, clutter files
-d2mr_thesis1/localonly
+/localonly
 
 # Types of files not for GitHub
 *.heic
