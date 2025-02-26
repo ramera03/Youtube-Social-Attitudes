@@ -1,26 +1,57 @@
 ---
-title: "manuscript"
+title: "YouTube Kids: The Effect of YouTube on Children’s Racial Learning"
+shorttitle: "YouTube Racial Attitudes"
+author: 
+- name: Reilly Amera
+  corresponding: true
+  email: ramera@uchicago.edu
+  affiliations:
+  - id: id1
+    name: "University of Chicago"
+    department: MA Program in the Social Sciences
+bibliography: [r-references, bibliography.bib]
 format: pdf
 editor: visual
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
 ```{r}
-1 + 1
+#| label: setup
+#| include: false
+
+library(papaja)
+library(knitr)
+library(broom)
+library(tidyverse)
+
+# Generate or overwrite r-reference files
+r-refs("r-references.bib")
 ```
 
-You can add options to executable code like this
+## Introduction
+
+Is YouTube making kids more racist? Despite sounding like the cultural fear-mongering often associated with screen time and development, such a question refers to real concerns that psychological research has yet to address: what are children really learning from YouTube, particularly with regard to race?
+
+### Literature Review {#sec-lit-review}
+
+Much of the literature on how children learn about their racial world places great emphasis on the transmission of information that is explicitly about race: how parents talk about members of other racial groups, how and whether schools portray the histories of marginalized groups, how peers may communicate stereotypes, etc. [@hugheswatford_2022_racial]. In this view, ethnic-racial socialization, or the ways in which agents transmit messages about ethnicity and race to children, occurs through direct verbal instruction. However, in addition to more explicit transmissions of racial knowledge, children are simultaneously exposed to a barrage of more implicit environmental inputs—who they live near, for instance, or who they see on screens—which may also affect these conceptions [@hughesetal_2023_growing]. 
+Not only does ethnic-racial socialization occur with explicit instruction, but so too do children attend to the racial patterns and organizations embedded into their environments and social settings [@hugheswatford_2022_racial]. Such environmental racial patterns—who tends to hold positions of authority, who tends to receive discipline in school, etc.—constitute racial regularities, or “persistent patterns in the relative social experiences of, or roles occupied by, two or more racial (or racialized groups) within a setting”  [@hugheswatford_2022_racial]. In response to such patterns, children engage in racial learning, or the meaning-making of external messaging so as to form their own conceptions of how race works in their social world [@hugheswatford_2022_racial]. As such, when exposed to consistent, repeated regularities, children draw inferences as to why such patterns exist and persist; they may accept that such patterns as necessary features of ‘the way things are,’ or may even create explanations for such patterns (e.g. “White families live in big houses because they work hard” in contrast to “Black families live in big houses because they got lucky”) [@hughesetal_2023_growing; @rizzoetal_2022_beliefs]. Further, this learning may be yet more implicit: when tested in the same environment, young children show levels of implicit biases, unconscious mental associations based on race or other social categories, similar to those of adults [@payneetal_2017_bias]. This suggests that features of specific environments such as racial regularities not only affect explicitly articulated beliefs but implicit understandings of one’s social environment. As such, to fully understand how children’s conceptions of race form, we must examine the ways in which environments containing ontologically inaccurate racial regularities affect their racial learning.
+One such environmental stream of input regarding race and racial regularities is social media. Children today have unparalleled access to social media platforms: YouTube, TikTok, Twitch, and more. On these sites, the sheer amount of content posted often outpaces enforcement of content guidelines, making it difficult to know exactly what children are seeing or learning from the content they are consuming. Unlike media such as television or movies, social media platforms are populated by both media corporations and individual content creators. YouTube is a social media platform that is particularly popular amongst children; many children use YouTube regularly: one third of parents of children aged 11 and younger surveyed by Pew Research Center indicated that they let their children use YouTube regularly [@smithetal_2018_many]. Further, amongst tweens and teens, video logs and gaming videos—types of content usually generated by influencers, not corporations—are the two most popular genres watched [@rollinsetal_2022_who]. 
+Despite massive popularity, research on the effects of YouTube and other forms of social media on children’s race-related attitudes and behaviors has not been methodologically systematic [@wardbridgewater_2023_media]. Though YouTube has become a regular part of children’s lives, it is still unknown how YouTube may be affecting children’s conceptions of racial categories and associated beliefs about race. However, some research has emerged describing racial regularities on YouTube: in a review conducted by Common Sense Media, in YouTube videos watched by children under the age of 8, prominent characters of color were far more likely to engage in violent behaviors or inappropriate language, and were less likely to appear alongside educational content [@rollinsetal_2022_who]. In another content analysis of the most popular YouTube videos at the time, more than three-fifths of videos in the sample included racial stereotypes, most of which reinforced and perpetuated them [@guoharlow_2014_usergenerated]. Taken together, we see that YouTube contains racial regularities in the form of stereotypes, which children may be accommodating into their beliefs, but there has not yet been any research confirming this connection. 
+While there is a body of research aimed at understanding how certain aspects of children’s environments contribute to the formation of racial attitudes, there is not as much focus on how YouTube, or other social media platforms, function as sites of racial socialization and learning via racial regularities. Similarly, though there have been some content analyses regarding the racial character of YouTube videos, such studies have yet to be done in conjunction with psychological measures of racial beliefs and attitudes. Due to this lack of research into how social media ecologies contribute to kids’ racial beliefs, I thus ask the question: are children for whom stereotypical social media is a part of their daily environment more likely to develop stereotyping or prejudicial racial beliefs and attitudes?
+
+### Present Study {#sec-present-study}
+
+This study will examine the relationship between YouTube usage and children’s development of racial attitudes, so as to understand whether and the degree to which YouTube may be a site of ethnic-racial socialization where children develop prejudices against those of other races. 
+I hypothesize that time spent on YouTube and children’s observation of racial regularities should covary; as children spend more time on YouTube, they may observe more negatively valenced racial regularities including people of color [@guoharlow_2014_usergenerated; @rollinsetal_2022_who]. Thus, I hypothesize that if children spend more time on YouTube, they will display greater racial stereotyping and prejudice against outgroups. While some children may not be consciously aware of on-screen racial regularities, these dynamics may still affect their racial attitudes [@hugheswatford_2022_racial]. As such, I hypothesize that the relationship between children’s time spent on YouTube and their exhibited racial stereotyping and prejudice will be mediated by their observations of negative racial regularities. 
+One additional factor that may moderate the relationship between time spent on YouTube and racial attitudes is whether a child’s favorite YouTuber is of a race other than their own, via the parasocial contact hypothesis. This theory suggests that when individuals have limited real life interpersonal contact with minority groups, the formation of parasocial (one-sided) relationships with outgroup media figures may reduce stereotyping and prejudice [@schiappaetal_2005_parasocial; @wongetal_2022_theorizing]. Much of the parasocial contact hypothesis literature explores the prejudice reduction made possible by parasocial relationships with television characters, yet the growing popularity of social media presents another medium through which parasocial relationships may be formed. If positive parasocial contact hypothesis effects may be observed when individuals form relationships with characters in other media, so too should these effects be observed when individuals have parasocial relationships with outgroup influencers [@banasetal_2020_metaanalysis]. Thus, I pose my third hypothesis: the relationship between the amount of time that children spend on YouTube and their racial stereotyping and prejudice will be moderated by whether they have a parasocial relationship with a favorite YouTuber of a race other than their own. Specifically, if children have a favorite YouTuber of a race other than their own and they have a parasocial relationship with this YouTuber, they will display less racial stereotyping and prejudice.
+
 
 ```{r}
+#| label: data analysis
 #| echo: false
-2 * 2
+# FOR THIS DRAFT - only include child data and simple regressions 
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+# References
+::: {#refs}
+:::
