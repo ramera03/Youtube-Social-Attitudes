@@ -1,0 +1,46 @@
+---
+title: "preparation"
+author: "Reilly Amera"
+date: "2025-02-26"
+output: html_document
+---
+
+```{r setup}
+library(tidyverse)
+```
+
+```{r read-in}
+child <- read_csv("child.csv", col_names = TRUE)
+parent <- read_csv("parent.csv", col_names = TRUE)
+```
+
+```{r cleaning}
+# removing unnecessary columns
+child <- child %>% 
+  select(-c(1:5, 8:18))
+child <- child[-c(1, 2),]
+
+parent <- parent %>% 
+  select(-c(1:6, 8:18))
+parent <- parent[-c(1, 2),]
+
+# replacing one NA (participant forgot ID)
+child$PID[is.na(child$PID)] <- 1
+
+# renaming 'finished' columns 
+child <- child %>% 
+  rename(Cfinished = Finished)
+
+parent <- parent %>% 
+  rename(Pfinished = Finished)
+```
+
+```{r wrangling}
+# merging datasets
+youtube <- full_join(parent, child, by = "PID")
+
+# removing instances where either parents or children failed to finish
+youtube <- youtube %>% 
+  filter(Pfinished == Cfinished)
+```
+
