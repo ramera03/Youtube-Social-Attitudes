@@ -96,6 +96,8 @@ First, they will answer questions related to their YouTube usage (perceptions of
 #| message: false
 #| warning: false
 
+# BASED ON APAQUARTO DEMO - WILL CHANGE FOR FINAL; WANTED TO TEST RENDERING
+
 # read in data
 youtube <- read_csv("data/youtube.csv", col_names = TRUE)
 
@@ -109,6 +111,8 @@ model <- lm(malleable_score ~ Ptime, data = youtube)
 #| echo: false
 #| message: false
 #| warning: false
+
+# BASED ON APAQUARTO DEMO - WILL CHANGE FOR FINAL; WANTED TO TEST RENDERING AND TRY INLINE REFERENCES
 
 # report_regression takes a lm model object as an argument
 # and returns a string of format:
