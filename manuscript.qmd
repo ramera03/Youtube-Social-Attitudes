@@ -9,8 +9,32 @@ author:
   - id: id1
     name: "University of Chicago"
     department: MA Program in the Social Sciences
-bibliography: [r-references, bibliography.bib]
-format: pdf
+bibliography: [bibliography.bib]
+link-citations: true
+draft-date: false
+lang: en
+language:
+  citation-last-author-separator: "and"
+  citation-masked-author: "Masked Citation"
+  citation-masked-date: "n.d."
+  citation-masked-title: "Masked Title"
+  email: "Email"
+format:
+  apaquarto-html: default
+  apaquarto-docx: default
+  apaquarto-typst: 
+    keep-typ: true
+    list-of-figures: true
+    list-of-tables: true
+    toc: true
+  apaquarto-pdf:
+    documentmode: man
+    keep-tex: true
+    list-of-figures: true
+    list-of-tables: true
+    fig-width: 2
+    fig-height: 2
+    out-width: 40%
 editor: visual
 ---
 
@@ -18,13 +42,15 @@ editor: visual
 #| label: setup
 #| include: false
 
+library(svglite)
 library(papaja)
 library(knitr)
 library(broom)
 library(tidyverse)
 
 # Generate or overwrite r-reference files
-r-refs("r-references.bib")
+# papaja::r_refs(file = "r-references.bib")
+
 ```
 
 ## Introduction
@@ -34,7 +60,7 @@ Is YouTube making kids more racist? Despite sounding like the cultural fear-mong
 ### Literature Review {#sec-lit-review}
 
 Much of the literature on how children learn about their racial world places great emphasis on the transmission of information that is explicitly about race: how parents talk about members of other racial groups, how and whether schools portray the histories of marginalized groups, how peers may communicate stereotypes, etc. [@hugheswatford_2022_racial]. In this view, ethnic-racial socialization, or the ways in which agents transmit messages about ethnicity and race to children, occurs through direct verbal instruction. However, in addition to more explicit transmissions of racial knowledge, children are simultaneously exposed to a barrage of more implicit environmental inputs—who they live near, for instance, or who they see on screens—which may also affect these conceptions [@hughesetal_2023_growing]. 
-Not only does ethnic-racial socialization occur with explicit instruction, but so too do children attend to the racial patterns and organizations embedded into their environments and social settings [@hugheswatford_2022_racial]. Such environmental racial patterns—who tends to hold positions of authority, who tends to receive discipline in school, etc.—constitute racial regularities, or “persistent patterns in the relative social experiences of, or roles occupied by, two or more racial (or racialized groups) within a setting”  [@hugheswatford_2022_racial]. In response to such patterns, children engage in racial learning, or the meaning-making of external messaging so as to form their own conceptions of how race works in their social world [@hugheswatford_2022_racial]. As such, when exposed to consistent, repeated regularities, children draw inferences as to why such patterns exist and persist; they may accept that such patterns as necessary features of ‘the way things are,’ or may even create explanations for such patterns (e.g. “White families live in big houses because they work hard” in contrast to “Black families live in big houses because they got lucky”) [@hughesetal_2023_growing; @rizzoetal_2022_beliefs]. Further, this learning may be yet more implicit: when tested in the same environment, young children show levels of implicit biases, unconscious mental associations based on race or other social categories, similar to those of adults [@payneetal_2017_bias]. This suggests that features of specific environments such as racial regularities not only affect explicitly articulated beliefs but implicit understandings of one’s social environment. As such, to fully understand how children’s conceptions of race form, we must examine the ways in which environments containing ontologically inaccurate racial regularities affect their racial learning.
+Not only does ethnic-racial socialization occur with explicit instruction, but so too do children attend to the racial patterns and organizations embedded into their environments and social settings [@hugheswatford_2022_racial]. Such environmental racial patterns—who tends to hold positions of authority, who tends to receive discipline in school, etc.—constitute racial regularities, or “persistent patterns in the relative social experiences of, or roles occupied by, two or more racial (or racialized groups) within a setting” [@hugheswatford_2022_racial]. In response to such patterns, children engage in racial learning, or the meaning-making of external messaging so as to form their own conceptions of how race works in their social world [@hugheswatford_2022_racial]. As such, when exposed to consistent, repeated regularities, children draw inferences as to why such patterns exist and persist; they may accept that such patterns as necessary features of ‘the way things are,’ or may even create explanations for such patterns (e.g. “White families live in big houses because they work hard” in contrast to “Black families live in big houses because they got lucky”) [@hughesetal_2023_growing; @rizzoetal_2022_beliefs]. Further, this learning may be yet more implicit: when tested in the same environment, young children show levels of implicit biases, unconscious mental associations based on race or other social categories, similar to those of adults [@payneetal_2017_bias] This suggests that features of specific environments such as racial regularities not only affect explicitly articulated beliefs but implicit understandings of one’s social environment. As such, to fully understand how children’s conceptions of race form, we must examine the ways in which environments containing ontologically inaccurate racial regularities affect their racial learning. 
 One such environmental stream of input regarding race and racial regularities is social media. Children today have unparalleled access to social media platforms: YouTube, TikTok, Twitch, and more. On these sites, the sheer amount of content posted often outpaces enforcement of content guidelines, making it difficult to know exactly what children are seeing or learning from the content they are consuming. Unlike media such as television or movies, social media platforms are populated by both media corporations and individual content creators. YouTube is a social media platform that is particularly popular amongst children; many children use YouTube regularly: one third of parents of children aged 11 and younger surveyed by Pew Research Center indicated that they let their children use YouTube regularly [@smithetal_2018_many]. Further, amongst tweens and teens, video logs and gaming videos—types of content usually generated by influencers, not corporations—are the two most popular genres watched [@rollinsetal_2022_who]. 
 Despite massive popularity, research on the effects of YouTube and other forms of social media on children’s race-related attitudes and behaviors has not been methodologically systematic [@wardbridgewater_2023_media]. Though YouTube has become a regular part of children’s lives, it is still unknown how YouTube may be affecting children’s conceptions of racial categories and associated beliefs about race. However, some research has emerged describing racial regularities on YouTube: in a review conducted by Common Sense Media, in YouTube videos watched by children under the age of 8, prominent characters of color were far more likely to engage in violent behaviors or inappropriate language, and were less likely to appear alongside educational content [@rollinsetal_2022_who]. In another content analysis of the most popular YouTube videos at the time, more than three-fifths of videos in the sample included racial stereotypes, most of which reinforced and perpetuated them [@guoharlow_2014_usergenerated]. Taken together, we see that YouTube contains racial regularities in the form of stereotypes, which children may be accommodating into their beliefs, but there has not yet been any research confirming this connection. 
 While there is a body of research aimed at understanding how certain aspects of children’s environments contribute to the formation of racial attitudes, there is not as much focus on how YouTube, or other social media platforms, function as sites of racial socialization and learning via racial regularities. Similarly, though there have been some content analyses regarding the racial character of YouTube videos, such studies have yet to be done in conjunction with psychological measures of racial beliefs and attitudes. Due to this lack of research into how social media ecologies contribute to kids’ racial beliefs, I thus ask the question: are children for whom stereotypical social media is a part of their daily environment more likely to develop stereotyping or prejudicial racial beliefs and attitudes?
@@ -45,13 +71,84 @@ This study will examine the relationship between YouTube usage and children’s 
 I hypothesize that time spent on YouTube and children’s observation of racial regularities should covary; as children spend more time on YouTube, they may observe more negatively valenced racial regularities including people of color [@guoharlow_2014_usergenerated; @rollinsetal_2022_who]. Thus, I hypothesize that if children spend more time on YouTube, they will display greater racial stereotyping and prejudice against outgroups. While some children may not be consciously aware of on-screen racial regularities, these dynamics may still affect their racial attitudes [@hugheswatford_2022_racial]. As such, I hypothesize that the relationship between children’s time spent on YouTube and their exhibited racial stereotyping and prejudice will be mediated by their observations of negative racial regularities. 
 One additional factor that may moderate the relationship between time spent on YouTube and racial attitudes is whether a child’s favorite YouTuber is of a race other than their own, via the parasocial contact hypothesis. This theory suggests that when individuals have limited real life interpersonal contact with minority groups, the formation of parasocial (one-sided) relationships with outgroup media figures may reduce stereotyping and prejudice [@schiappaetal_2005_parasocial; @wongetal_2022_theorizing]. Much of the parasocial contact hypothesis literature explores the prejudice reduction made possible by parasocial relationships with television characters, yet the growing popularity of social media presents another medium through which parasocial relationships may be formed. If positive parasocial contact hypothesis effects may be observed when individuals form relationships with characters in other media, so too should these effects be observed when individuals have parasocial relationships with outgroup influencers [@banasetal_2020_metaanalysis]. Thus, I pose my third hypothesis: the relationship between the amount of time that children spend on YouTube and their racial stereotyping and prejudice will be moderated by whether they have a parasocial relationship with a favorite YouTuber of a race other than their own. Specifically, if children have a favorite YouTuber of a race other than their own and they have a parasocial relationship with this YouTuber, they will display less racial stereotyping and prejudice.
 
+## Methods {#sec-methods}
+
+### Participants and Procedures {#sec-participants-and-procedures}
+This study will include children between the ages of 8 and 13. Though children may express negative racial attitudes prior to this point in development, during early adolescence, children develop the ability to recognize and reflect on the racial patterns and dynamics present in their environments (Hughes & Watford, 2022). As such, this age range should allow me to observe how the observation racial regularities present on YouTube may affect children’s stereotyping and prejudicial attitudes, and how such a phenomenon develops. Participants will be recruited through Qualtrics Panels, which will allow me to obtain a representative sample of parents and children; other studies have used Qualtrics Panels with similar methods and populations (Byrd & Ahn, 2020). 
+Data will be collected during February and March of 2025 from families recruited via Qualtrics Panels. Participating families will receive two Qualtrics surveys to be completed asynchronously, and they will receive compensation (around $10-$15; the final amount will be determined by Qualtrics Panels) after both surveys have been completed. First, parents will complete a demographics and YouTube usage survey, in which they will answer questions related to parent and child demographics (child age, race/ethnicity, parent income and level of education, etc), as well as questions regarding their child’s YouTube usage (for instance, time spent on YouTube, as reported by their child’s device screen time). 
+Then, children will complete their own survey.
+
+### Measures {#sec-measures}
+First, they will answer questions related to their YouTube usage (perceptions of time spent). Next, they will either answer more questions pertaining to YouTube content, or their general racial attitudes; either block of questions will appear randomly, so as to reduce the influence of question order. In the racial attitudes section, children will answer questions regarding outgroup prejudices, as rated on a Likert scale. They will also complete one friend choice item, as a simple exploratory measure of racial preference. In the YouTube content section, children will be asked to think of their favorite YouTuber as they answer questions related to whether they have a parasocial relationship with that YouTuber, as well as their observations of racial regularities on YouTube.
+
+## Results {#sec-results}
 
 ```{r}
-#| label: data analysis
+#| label: regression 
 #| echo: false
-# FOR THIS DRAFT - only include child data and simple regressions 
+#| message: false
+#| warning: false
+
+# In the future, will have a final, written out, intermediate dataset that will be read in here. 
+
+# regression model
+model <- lm(malleable_score ~ Ptime, data = youtube)
+
+```
+
+```{r}
+#| label: regression-report-functions
+#| echo: false
+#| message: false
+#| warning: false
+
+# report_regression takes a lm model object as an argument
+# and returns a string of format:
+# "$F$(df, df.residual) = F-value, $p$ = p-value, $R^2$ = r-squared"
+report_regression <- function(model) {
+    
+  # Extract coefficients and p-values
+  m_glance <- glance(model)
+
+  # Format the p-value
+  p_value <- apa_p(m_glance$p.value, add_equals = TRUE)
+  
+  # Create a string with the results
+  report <- paste0("$F$(", 
+                   m_glance$df, 
+                   ", ", m_glance$df.residual, 
+                   ") = ", round(m_glance$statistic, 2), 
+                   ", $p$ = ", p_value, ", $R^2$ = ", round(m_glance$r.squared,2))
+  
+  return(report)    
+    
+}
+
+```
+
+Below is a simple regression displaying the relationship between time spent on YouTube and a child's racial attitudes. Despite a visual upward trend, this relationship is not statistically significant: `r report_regression(model)`. 
+
+```{r}
+#| label: regression-plot
+#| fig-cap: "Simple Correlation Between Time Spent on YouTube and Racial Attitudes score"
+#| fig-scap: "Time v. Attitudes"
+#| fig-align: "center"
+#| fig-width: 6
+#| fig-height: 4
+#| echo: false
+#| message: false
+#| warning: false
+
+model_plot <- ggplot(youtube) +
+  aes(x = Ptime, y = malleable_score) +
+  geom_point() +
+  stat_smooth(method = "lm") +
+  scale_y_continuous(name = "Racial Attitudes Score") +
+  scale_x_continuous(name = "Time spent on YouTube")
+model_plot
+
 ```
 
 # References
-::: {#refs}
-:::
+
+
