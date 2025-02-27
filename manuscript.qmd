@@ -90,7 +90,7 @@ First, they will answer questions related to their YouTube usage (perceptions of
 #| warning: false
 
 # read in data
-parent <- read_csv("data/youtube.csv", col_names = TRUE)
+youtube <- read_csv("data/youtube.csv", col_names = TRUE)
 
 # regression model
 model <- lm(malleable_score ~ Ptime, data = youtube)
