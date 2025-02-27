@@ -6,9 +6,11 @@ This repository contains the data, analysis, and final thesis manuscript for Rei
 1. *_extensions*: APA Quarto extensions
 2. *data*: Everything data-related for this project, including data sets used, intermediate data sets created, and data preparation 
 3. *manuscript_files*: Files associated with knitting and rendering 
+
 **Bib Files**
 1. *bibliography.bib*: Academic references used in this manuscript
 2. *r-references.bib*: R references used in this manuscript
+
 **Files**
 1. *manuscript.pdf*: Manuscript rendered as pdf
 2. *manuscript.qmd*: Manuscript qmd source code/original document
