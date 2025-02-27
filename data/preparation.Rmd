@@ -40,7 +40,7 @@ parent <- parent %>%
 # Will need to clean parent reported time data. Did so out of R for this draft, but will do it in R for the final version of this project. Find the unedited version in localonly
 ```
 
-```{r wrangling}
+```{r wrangling a}
 # merging datasets
 youtube <- full_join(parent, child, by = "PID")
 
@@ -66,7 +66,7 @@ youtube <- youtube %>%
 ```
 
 
-```{r wrangling}
+```{r wrangling b}
 # CATEGORICAL: Dealing with Likert scales - child survey items
 
 # QUESTION: DO I KEEP THIS DATA ORDINAL OR TURN IT NUMERIC? 
