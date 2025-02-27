@@ -6,6 +6,8 @@ output: html_document
 ---
 
 ```{r setup}
+#install.packages("eeptools") 
+#used for birthday -> age. Found out about this from a YouTube video
 library(eeptools)
 library(tidyverse)
 ```
