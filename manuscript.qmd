@@ -89,7 +89,8 @@ First, they will answer questions related to their YouTube usage (perceptions of
 #| message: false
 #| warning: false
 
-# In the future, will have a final, written out, intermediate dataset that will be read in here. 
+# read in data
+parent <- read_csv("youtube.csv", col_names = TRUE)
 
 # regression model
 model <- lm(malleable_score ~ Ptime, data = youtube)
