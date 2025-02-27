@@ -190,5 +190,8 @@ youtube <- youtube %>%
   mutate(regularity_score = regularity_score/35)
 
 # definitely need to calculate cronbach's alphas...
+
+# temporary intermediate dataset
+write_csv(youtube, "youtube.csv")
 ```
 
