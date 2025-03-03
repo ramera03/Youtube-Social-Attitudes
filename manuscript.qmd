@@ -163,6 +163,8 @@ model_plot
 
 ```
 
+\clearpage
 # References
-
+:::{refs}
+:::
 
