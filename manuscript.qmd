@@ -9,7 +9,9 @@ author:
   - id: id1
     name: "University of Chicago"
     department: MA Program in the Social Sciences
-bibliography: [bibliography.bib]
+floatsintext: true
+numbered-lines: false
+bibliography: [r-references.bib, bibliography.bib]
 link-citations: true
 draft-date: false
 lang: en
