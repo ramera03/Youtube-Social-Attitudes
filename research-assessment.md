@@ -99,7 +99,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3.  Does not have duplicate/redundant elements
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments: 
 
 2.  Maintain an informative and up-to-date README.md
@@ -108,7 +108,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2.  Outlines the repo structure with file tree or similar
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 3.  integrate a GitHub repo with an R studio project, including .gitignore file
@@ -117,7 +117,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2.  .gitingore comprehensively excludes unnecessary, private, and very large files and are commented appropriately
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 4.  effectively use version control
@@ -126,7 +126,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2.  Relies on document revisions rather than manually created new versions
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 ### R programming
@@ -139,8 +139,8 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Uses more than one function to install/load/require packages (including those used in commented code)
 
         -   [x] Objective attempt
-        -   [ ] Objective met
-        -   Grader comments: See preparation.rmd lines 9-12
+        -   [x] Objective met
+        -   Grader comments: See preparation.rmd lines 9-12 -- ND: your preparation file should be an .R script, not a notebook
         
 6.  Use arithmetic, comparison, and logical operators
 
@@ -178,7 +178,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Uses only relative paths that run without error when repo is cloned
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments: in qmd, but also see preparation.Rmd lines 16-17 and 197
 
 10. Use `dplyr` and `tidyr` functions to transform data
@@ -188,7 +188,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Combines `dplyr` and `tidyr` functions in a data transformation pipeline
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments: see preparation.Rmd (this is most of the document)
 
 11. Use `stringr` functions to work with string variables
@@ -207,7 +207,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     - NOTE: Though they are base R functions, `factor()` and `levels()` can be used to meet this objective as long as they are used in a way that demonstrates the same skills as `forcats` functions, which should involve including optional arguments
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments: see preparation.Rmd lines 77-120
 
 ### Data visualization with ggplot2
@@ -284,8 +284,8 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. Uses dynamic inline R code to render data-dependent text
 
         -   [x] Objective attempt
-        -   [ ] Objective met
-        -   Grader comments:
+        -   [x] Objective met
+        -   Grader comments: You're executing this correctly, but for your final draft you should look around at how psych articles (apa formatted specifically) typically present results in text. Like the silly formatting and stylistic details -- where to put parentheses, when to use a color, what to capitalize, etc. It's more subjective, but you still want to go with standard practice.
 
 ### BibTeX
 
@@ -296,7 +296,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. May use `cite_r()` to cite R and R packages
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 21. Render an APA7 references page from a .bib file
@@ -309,7 +309,9 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 
         -   [x] Objective attempt
         -   [ ] Objective met
-        -   Grader comments:
+        -   Grader comments: 2 very small changes needed:
+            1.  add a \clearpage line above # References
+            2.  proof your in text references. in particular I'm seeing that your bib file thinks D. Hughes is a different person from D.L. Hughes and giving too much in-text information as a result
 
 ### Notebooks and code chunks
 
@@ -321,8 +323,8 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4.  Chunks are distributed throughout the manuscript, sensibly placed near the text they support
 
         -   [x] Objective attempt
-        -   [ ] Objective met
-        -   Grader comments: 
+        -   [x] Objective met
+        -   Grader comments: looks great at this point, just be sure to keep it up as you expand your work and add in many more chunks!
         
 23. Use code chunks to set up a quarto document
 
@@ -367,7 +369,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     1. Includes all necessary metadata, output options, and formatting options necessary to render an APA styled document (or other specified style if appropriate for the project)
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         
 27. Use quarto R Markdown to compose an academic manuscript
@@ -440,8 +442,8 @@ I plan to ensure that my final version has a) thoughtful narrative writing and b
 
 All final projects are graded by Dr. Dowling. You will see your grade on Canvas separated into two categories: objective points and engagement points.
 
--   **Objective points:** #/30
--   **Engagement points:** #/10
--   **Total points:** #/40
+-   **Objective points:** 11/30
+-   **Engagement points:** 7/10
+-   **Total points:** 18/40
 
-**Comments:**
+**Comments:** Reilly, this is looking great! It's super valid that there's an element of shoehorning things in to meet all the objectives that can be frustrating, but just keep being creative about it. It's just an excuse to practice what you've learned (but again...totally valid to be annoyed by it). Looking forward to your final draft! Also, it would be very very cool if you could turn this into a website, but keep in mind that this is already a challenging undertaking. You're going to keep working on this beyond this class, so it would be totally reasonable to set that as a goal to pursue *after* D2MR. 
