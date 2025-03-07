@@ -10,6 +10,8 @@ output: html_document
 #used for birthday -> age. Found out about this from a YouTube video
 library(eeptools)
 library(tidyverse)
+install.packages("mediation")
+library(mediation)
 ```
 
 ```{r read-in}
@@ -144,9 +146,9 @@ youtube <- youtube %>%
            ~ recode (.,
              "Really disagree" = 1,
              "Disagree" = 2,
-             "I don't know" = 0,
-             "Agree" = 3,
-             "Really agree" = 4
+             "I don't know" = 3,
+             "Agree" = 4,
+             "Really agree" = 5
            )))  %>% 
   # outgroup-freq
   mutate(`outgroup-freq` = recode(`outgroup-freq`, 
