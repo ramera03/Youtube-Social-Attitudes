@@ -48,14 +48,17 @@ library(svglite)
 library(papaja)
 library(knitr)
 library(broom)
+library(kableExtra)
+library(psych)
 library(tidyverse)
 
 # Generate or overwrite r-reference files
 # papaja::r_refs(file = "r-references.bib")
 
-```
+# read in data
+youtube <- read_csv("data/youtube.csv", col_names = TRUE)
 
-## Introduction
+```
 
 Is YouTube making kids more racist? Despite sounding like the cultural fear-mongering often associated with screen time and development, such a question refers to real concerns that psychological research has yet to address: what are children really learning from YouTube, particularly with regard to race?
 
@@ -79,18 +82,62 @@ I hypothesize that time spent on YouTube and children’s observation of racial 
 
 One additional factor that may moderate the relationship between time spent on YouTube and racial attitudes is whether a child’s favorite YouTuber is of a race other than their own, via the parasocial contact hypothesis. This theory suggests that when individuals have limited real life interpersonal contact with minority groups, the formation of parasocial (one-sided) relationships with outgroup media figures may reduce stereotyping and prejudice [@schiappaetal_2005_parasocial; @wongetal_2022_theorizing]. Much of the parasocial contact hypothesis literature explores the prejudice reduction made possible by parasocial relationships with television characters, yet the growing popularity of social media presents another medium through which parasocial relationships may be formed. If positive parasocial contact hypothesis effects may be observed when individuals form relationships with characters in other media, so too should these effects be observed when individuals have parasocial relationships with outgroup influencers [@banasetal_2020_metaanalysis]. Thus, I pose my third hypothesis: the relationship between the amount of time that children spend on YouTube and their racial stereotyping and prejudice will be moderated by whether they have a parasocial relationship with a favorite YouTuber of a race other than their own. Specifically, if children have a favorite YouTuber of a race other than their own and they have a parasocial relationship with this YouTuber, they will display less racial stereotyping and prejudice.
 
-## Methods {#sec-methods}
+# Methods {#sec-methods}
 
 ### Participants and Procedures {#sec-participants-and-procedures}
-This study will include children between the ages of 8 and 13. Though children may express negative racial attitudes prior to this point in development, during early adolescence, children develop the ability to recognize and reflect on the racial patterns and dynamics present in their environments (Hughes & Watford, 2022). As such, this age range should allow me to observe how the observation racial regularities present on YouTube may affect children’s stereotyping and prejudicial attitudes, and how such a phenomenon develops. Participants will be recruited through Qualtrics Panels, which will allow me to obtain a representative sample of parents and children; other studies have used Qualtrics Panels with similar methods and populations (Byrd & Ahn, 2020). 
+This study includes dyads of parents and children between the ages of 8 and 13 [^1]. Though children may express negative racial attitudes prior to this point in development, during early adolescence, children develop the ability to recognize and reflect on the racial patterns and dynamics present in their environments [@hugheswatford_2022_racial]. As such, this age range allows me to observe how the observation racial regularities present on YouTube may affect children’s stereotyping and prejudicial attitudes, and how such a phenomenon develops. Participants were recruited through Qualtrics Panels, allowing me to obtain a representative sample of parents and children; other studies have used Qualtrics Panels with similar methods and populations [@byrdahn_2020_profiles]. 
 
-Data will be collected during February and March of 2025 from families recruited via Qualtrics Panels. Participating families will receive two Qualtrics surveys to be completed asynchronously, and they will receive compensation (around $10-$15; the final amount will be determined by Qualtrics Panels) after both surveys have been completed. First, parents will complete a demographics and YouTube usage survey, in which they will answer questions related to parent and child demographics (child age, race/ethnicity, parent income and level of education, etc), as well as questions regarding their child’s YouTube usage (for instance, time spent on YouTube, as reported by their child’s device screen time). 
-Then, children will complete their own survey.
+[^1]: Pilot data has demonstrated that Qualtrics Panels has not, thus far, been as stringent in participant age verification. As such, data used presently is from a broader age range than will be included in the final sample, after stricter age validation has been included.
+
+Pilot data has been collected in March of 2025 from families recruited via Qualtrics Panels (*N* = `r length(transaction_id)`). Participating families receive two Qualtrics surveys to be completed asynchronously, and receive compensation (as determined by Qualtrics Panels) after both surveys have been completed. First, parents complete a demographics and YouTube usage survey, then children complete their own survey.
 
 ### Measures {#sec-measures}
-First, they will answer questions related to their YouTube usage (perceptions of time spent). Next, they will either answer more questions pertaining to YouTube content, or their general racial attitudes; either block of questions will appear randomly, so as to reduce the influence of question order. In the racial attitudes section, children will answer questions regarding outgroup prejudices, as rated on a Likert scale. They will also complete one friend choice item, as a simple exploratory measure of racial preference. In the YouTube content section, children will be asked to think of their favorite YouTuber as they answer questions related to whether they have a parasocial relationship with that YouTuber, as well as their observations of racial regularities on YouTube.
 
-## Results {#sec-results}
+In the parent survey, participants answer questions related to parent and child demographics (child age, race/ethnicity, parent income and level of education, etc), as well as questions regarding their child’s YouTube usage (for instance, time spent on YouTube, as reported by their child’s device screen time). 
+
+In the child survey, children answer questions related to their YouTube usage, such as time spent on YouTube and their favorite genre. 
+Next, they will either answer more questions pertaining to YouTube content, or their general racial attitudes; either block of questions will appear randomly, so as to reduce the influence of question order. In the racial attitudes section, children will answer questions regarding outgroup prejudices, as rated on a Likert scale. They will also complete one friend choice item, as a simple exploratory measure of racial preference. In the YouTube content section, children will be asked to think of their favorite YouTuber as they answer questions related to whether they have a parasocial relationship with that YouTuber, as well as their observations of racial regularities on YouTube.
+
+```{r}
+#| label: report-reliability-function
+#| echo: false
+#| message: false
+#| warning: false
+
+alpha(youtube %>% select(malleable_1:malleable_4))
+alpha(youtube %>% select(homophily_appear_1:homophily_appear_5))
+alpha(youtube %>% select(homophily_behave_1:homophily_behave_6))
+alpha(youtube %>% select(parasocial_1:parasocial_5))
+alpha(youtube %>% select(regularities_1:regularities_5))
+
+return_alpha <- function(data, cols) {
+  # select data 
+  selected_data <- data %>% select({{ cols }})
+  # compute alpha
+  alpha_result <- psych::alpha(selected_data, check.keys = TRUE)
+  # Extract and return the raw alpha value
+  return(alpha_result$total$raw_alpha)
+}
+
+reliability <- 
+  return_alpha(malleable_1:malleable_4) 
+```
+
+```{r}
+#| label: tbl-reliability
+#| tbl-cap: "Reliability of each scale used"
+#| echo: false
+#| message: false
+#| warning: false
+
+# Generate kable table
+kable(reliability, format = "html", caption = "Function Outputs in One Column") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+
+
+# Results {#sec-results}
 
 ```{r}
 #| label: regression 
@@ -99,9 +146,6 @@ First, they will answer questions related to their YouTube usage (perceptions of
 #| warning: false
 
 # BASED ON APAQUARTO DEMO - WILL CHANGE FOR FINAL; WANTED TO TEST RENDERING
-
-# read in data
-youtube <- read_csv("data/youtube.csv", col_names = TRUE)
 
 # regression model
 model <- lm(malleable_score ~ Ptime, data = youtube)
@@ -135,7 +179,6 @@ report_regression <- function(model) {
                    ", $p$ = ", p_value, ", $R^2$ = ", round(m_glance$r.squared,2))
   
   return(report)    
-    
 }
 
 ```
@@ -162,6 +205,7 @@ model_plot <- ggplot(youtube) +
 model_plot
 
 ```
+# Discussion
 
 \clearpage
 # References
