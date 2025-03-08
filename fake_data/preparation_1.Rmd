@@ -70,10 +70,8 @@ youtube <- youtube %>%
 ```
 
 
-```{r wrangling b}
-# CATEGORICAL: Dealing with Likert scales - child survey items
-
-# QUESTION: DO I KEEP THIS DATA ORDINAL OR TURN IT NUMERIC? 
+```{r factors}
+# CATEGORICAL: Dealing with Likert scales
 
 # Making relevant items into factors and creating levels 
 youtube <- youtube %>% 
