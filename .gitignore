@@ -2,9 +2,14 @@
 # Contains: private data, clutter files
 localonly/
 
+# Additional clutter
+manuscript_files/*
+
 # Types of files not for GitHub
 *.heic
 *.docx
+*.tex
+*.svg
 
 # Ignore This File
 /github-recovery-codes.txt
