@@ -11,7 +11,7 @@ author:
     department: MA Program in the Social Sciences
 floatsintext: true
 numbered-lines: false
-bibliography: [r-references.bib, bibliography.bib]
+bibliography: [r-references.bib, MA_THESIS.bib]
 link-citations: true
 draft-date: false
 lang: en
@@ -49,6 +49,7 @@ library(papaja)
 library(knitr)
 library(broom)
 library(kableExtra)
+library(flextable)
 library(psych)
 library(tidyverse)
 
@@ -57,6 +58,45 @@ library(tidyverse)
 
 # read in data
 youtube <- read_csv("data/youtube.csv", col_names = TRUE)
+
+```
+
+```{r}
+#| label: my-theme
+#| echo: false
+#| message: false
+#| warning: false
+
+my_theme <- function(){
+  theme(
+    # Plot background color 
+    plot.background = element_rect(fill = NA),
+    # Adding border 
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+    # Panel background
+    panel.background = element_rect(fill = NA),
+    # Plot labels
+    plot.title = element_text(color = "black", family = "serif", face = "bold"),
+    plot.subtitle = element_text(color = "black", family = "serif"),
+    plot.caption = element_text(color = "black", family = "serif", face = "italic"),
+    # Customizing grid lines 
+    panel.grid.major.y = element_line(color = "lightgrey", linetype = 1, linewidth = 0.5),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.x = element_line(color = "lightgrey", linetype = 1, linewidth = 0.5),
+    panel.grid.minor.x = element_blank(),
+    # Customizing facets
+    strip.background = element_rect(color = "black", fill = NA),
+    strip.text = element_text(color = "black", hjust = 0.5, family = "serif"),
+    # Customizing axes
+    axis.text.y = element_text(color = "black", family = "serif", face = "bold.italic"),
+    axis.text.x = element_text(color = "black", family = "serif", face = "bold.italic"),
+    axis.title = element_text(color = "black", family = "serif", face = "bold"),
+    axis.ticks = element_line(color = "black"),
+    # Customizing legend
+    legend.title = element_text(color = "black", family = "serif", face = "italic"), 
+    legend.text = element_text(color = "black", family = "serif")
+  )
+}
 
 ```
 
@@ -85,18 +125,27 @@ One additional factor that may moderate the relationship between time spent on Y
 # Methods {#sec-methods}
 
 ### Participants and Procedures {#sec-participants-and-procedures}
+
 This study includes dyads of parents and children between the ages of 8 and 13 [^1]. Though children may express negative racial attitudes prior to this point in development, during early adolescence, children develop the ability to recognize and reflect on the racial patterns and dynamics present in their environments [@hugheswatford_2022_racial]. As such, this age range allows me to observe how the observation racial regularities present on YouTube may affect children’s stereotyping and prejudicial attitudes, and how such a phenomenon develops. Participants were recruited through Qualtrics Panels, allowing me to obtain a representative sample of parents and children; other studies have used Qualtrics Panels with similar methods and populations [@byrdahn_2020_profiles]. 
 
 [^1]: Pilot data has demonstrated that Qualtrics Panels has not, thus far, been as stringent in participant age verification. As such, data used presently is from a broader age range than will be included in the final sample, after stricter age validation has been included.
 
-Pilot data has been collected in March of 2025 from families recruited via Qualtrics Panels (*N* = `r length(transaction_id)`). Participating families receive two Qualtrics surveys to be completed asynchronously, and receive compensation (as determined by Qualtrics Panels) after both surveys have been completed. First, parents complete a demographics and YouTube usage survey, then children complete their own survey.
+Pilot data has been collected in March of 2025 from families recruited via Qualtrics Panels (*N* = `r length(youtube$transaction_id)`). Participating families receive two Qualtrics surveys to be completed asynchronously, and receive compensation (as determined by Qualtrics Panels) after both surveys have been completed. First, parents complete a demographics and YouTube usage survey, then children complete their own survey.
 
 ### Measures {#sec-measures}
 
 In the parent survey, participants answer questions related to parent and child demographics (child age, race/ethnicity, parent income and level of education, etc), as well as questions regarding their child’s YouTube usage (for instance, time spent on YouTube, as reported by their child’s device screen time). 
 
-In the child survey, children answer questions related to their YouTube usage, such as time spent on YouTube and their favorite genre. 
-Next, they will either answer more questions pertaining to YouTube content, or their general racial attitudes; either block of questions will appear randomly, so as to reduce the influence of question order. In the racial attitudes section, children will answer questions regarding outgroup prejudices, as rated on a Likert scale. They will also complete one friend choice item, as a simple exploratory measure of racial preference. In the YouTube content section, children will be asked to think of their favorite YouTuber as they answer questions related to whether they have a parasocial relationship with that YouTuber, as well as their observations of racial regularities on YouTube.
+In the child survey, children answer questions related to their YouTube usage, such as time spent on YouTube and their favorite genre. Next, they will either answer more questions pertaining to YouTube content, or their general racial attitudes; either block of questions will appear randomly, so as to reduce the influence of question order. In the racial attitudes section, children will answer questions regarding outgroup prejudices, as rated on a Likert scale. They will also complete one friend choice item, as a simple exploratory measure of racial preference. In the YouTube content section, children will be asked to think of their favorite YouTuber as they answer questions related to whether they have a parasocial relationship with that YouTuber, as well as their observations of racial regularities on YouTube.
+
+The particular measures used in the child survey are as follows:
+
+1. Beliefs about groups (adapted from @halperinetal_2012_promoting)
+2. Perceived homophily in behavior and appearance (adapted from @mccroskeyetal_1975_development)
+3. Parasocial interaction with a YouTuber (adapted from @sungetal_2023_shes)
+4. Racial regularities (created based on @rollinsetal_2022_who)
+5. Friend choice (adapted from @amemiyabian_2024_why)
+All measures used in adult studies have been specifically adapted for child readability. 
 
 ```{r}
 #| label: report-reliability-function
@@ -104,40 +153,110 @@ Next, they will either answer more questions pertaining to YouTube content, or t
 #| message: false
 #| warning: false
 
-alpha(youtube %>% select(malleable_1:malleable_4))
-alpha(youtube %>% select(homophily_appear_1:homophily_appear_5))
-alpha(youtube %>% select(homophily_behave_1:homophily_behave_6))
-alpha(youtube %>% select(parasocial_1:parasocial_5))
-alpha(youtube %>% select(regularities_1:regularities_5))
-
 return_alpha <- function(data, cols) {
   # select data 
-  selected_data <- data %>% select({{ cols }})
+  selected_data <- data %>% select(all_of(cols))
   # compute alpha
   alpha_result <- psych::alpha(selected_data, check.keys = TRUE)
   # Extract and return the raw alpha value
   return(alpha_result$total$raw_alpha)
 }
-
-reliability <- 
-  return_alpha(malleable_1:malleable_4) 
 ```
 
 ```{r}
-#| label: tbl-reliability
-#| tbl-cap: "Reliability of each scale used"
+#| label: reliability-df
 #| echo: false
 #| message: false
 #| warning: false
 
-# Generate kable table
-kable(reliability, format = "html", caption = "Function Outputs in One Column") %>%
-  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+measures <-
+  list(
+  "Group Malleability" = c("malleable_1", "malleable_2", "malleable_3", "malleable_4"),
+  "Homophily (Appearance)" = c("homophily_appear_1", "homophily_appear_2", "homophily_appear_3", "homophily_appear_4", "homophily_appear_5"),
+  "Homophily (Appearance)" = c("homophily_behave_1", "homophily_behave_2", "homophily_behave_3", "homophily_behave_4", "homophily_behave_6"),
+  "Parasociality" = c("parasocial_1", "parasocial_2", "parasocial_3", "parasocial_4", "parasocial_5"),
+  "Racial Regularities" = c("regularities_1", "regularities_2", "regularities_3", "regularities_4", "regularities_5")
+)
 
+reliability <- data.frame(
+  Measure = names(measures),
+  Alpha = sapply(measures, function(cols) return_alpha(youtube, cols))
+)
+
+reliability <- reliability %>%
+  mutate(Alpha = round(Alpha, digits = 2)) %>% 
+  mutate(
+    Evaluation = case_when(
+      Alpha >= 0.95 ~ "Excellent",
+      Alpha >= 0.9 ~ "Great",
+      Alpha >= 0.8 ~ "Good",
+      Alpha >= 0.7 ~ "Acceptable",
+      Alpha >= 0.6 ~ "Questionable",
+      Alpha < 0.6 ~ "Poor"
+    )
+  )
 ```
 
 
+```{r}
+#| label: tbl-reliability
+#| tbl-cap: "Questionnaire Reliability"
+#| echo: false
+#| message: false
+#| warning: false
+
+# Generate table
+kable(reliability, 
+      align = c("c", "c", "c"),
+      caption = "Reliability (assessed through Cronbach's Alpha) of questionnaires used, within sample") %>% 
+  kable_styling(position = "center", latex_options = c("striped"))
+
+```
+
+@tbl-reliability reports the reliability of all questionnaires used, within the present sample. 
+
 # Results {#sec-results}
+
+Looking first to the distributions of time spent on YouTube among  participants, just as many children use YouTube every day as (*N* = `r sum(youtube$daily == 'Every Day')`) as those who do not (*N* = `r sum(youtube$daily == 'Not Every Day')`). And, as shown in @fig-time-distribution, children who use YouTube every day appear to use YouTube for more time on an average day than children who do not. On average, children spend about `r round(mean(youtube$Ptime), digits = 0)` minutes, or `r round(mean(youtube$Ptime)/60, digits = 0)` hour, on YouTube on an average day. 
+
+```{r}
+#| label: fig-time-distribution
+#| fig-cap: "Distribution of watch time for kids"
+#| fig-align: "center"
+#| echo: false
+#| message: false
+#| warning: false
+
+# Set figure output settings - renders really small
+
+ggplot(subset(youtube, !is.na(Ctime)), aes(x = Ctime)) + 
+  geom_bar(color = "black", fill = "grey") +
+  facet_grid(~ daily) +
+  scale_x_discrete(labels = c("About 15 minutes a day" = "~ 15 min", "About 30 minutes a day" = "~ 30 min", "About 45 minutes a day" = "~ 45 min", "About 1 hour a day" = "~ 1 hr", "About 1 and 1/2 hours a day" = "~ 1.5 hr", "More than 2 hours a day" = "> 2 hr")) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  labs(x = "Time Spent on YouTube",
+       y = "Number of Participants",
+       title = "Time Spent on YouTube on an Average Day",
+       subtitle = "Comparing children who use YouTube every day and children who do not") +
+  my_theme()
+
+```
+
+To what extent is time spent on YouTube predictive of how often children observe racial regularities?
+
+```{r}
+summary(aov(regularity_score ~ Ctime, data = youtube))
+summary(aov(regularity_score ~ outgroup_freq, data = youtube))
+```
+
+```{r}
+summary(aov(malleable_score ~ Ctime, data = youtube))
+summary(aov(malleable_score ~ outgroup_freq, data = youtube))
+```
+
+To what extent is time spent on YouTube predictive 
 
 ```{r}
 #| label: regression 
@@ -147,10 +266,21 @@ kable(reliability, format = "html", caption = "Function Outputs in One Column") 
 
 # BASED ON APAQUARTO DEMO - WILL CHANGE FOR FINAL; WANTED TO TEST RENDERING
 
+
+
 # regression model
 model <- lm(malleable_score ~ Ptime, data = youtube)
 
+summary(lm(malleable_score ~ regularity_score, data = youtube))
+
+t.test(malleable_score ~ race, data = youtube)
+t.test(regularity_score ~ race, data = youtube)
+
+t.test(malleable_score ~ daily, data = youtube)
+t.test(regularity_score ~ daily, data = youtube)
 ```
+
+
 
 ```{r}
 #| label: regression-report-functions
@@ -186,7 +316,7 @@ report_regression <- function(model) {
 Below is a simple regression displaying the relationship between time spent on YouTube and a child's racial attitudes. Despite a visual upward trend, this relationship is not statistically significant: `r report_regression(model)`. 
 
 ```{r}
-#| label: regression-plot
+#| label: fig-regression-plot
 #| fig-cap: "Simple Correlation Between Time Spent on YouTube and Racial Attitudes score"
 #| fig-scap: "Time v. Attitudes"
 #| fig-align: "center"
@@ -196,13 +326,14 @@ Below is a simple regression displaying the relationship between time spent on Y
 #| message: false
 #| warning: false
 
-model_plot <- ggplot(youtube) +
-  aes(x = Ptime, y = malleable_score) +
-  geom_point() +
+ggplot(youtube) +
+  aes(x = regularity_score, y = malleable_score) +
+  geom_point(aes(color = daily)) +
   stat_smooth(method = "lm") +
-  scale_y_continuous(name = "Racial Attitudes Score") +
-  scale_x_continuous(name = "Time spent on YouTube")
-model_plot
+  facet_wrap(~ race) +
+  scale_y_continuous(name = "Malleability Score") +
+  scale_x_continuous(name = "Regularities Score") +
+  my_theme()
 
 ```
 # Discussion
