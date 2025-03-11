@@ -2,6 +2,9 @@
 # Contains: private data, clutter files
 localonly/
 
+# Simulated data (no longer used now that there is real, pilot data)
+fake_data/
+
 # Additional clutter
 manuscript_files/*
 
