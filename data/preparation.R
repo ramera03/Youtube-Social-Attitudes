@@ -1,31 +1,10 @@
----
-title: "preparation"
-author: "Reilly Amera"
-date: "2025-03-07"
-output: html_document
----
-
-MOVE TO R SCRIPT! 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r packages}
-# Packages
 library(tidyverse)
-library(eeptools)
-```
 
-
-```{r read-in}
 # Read in data
-child <- read_csv("child.csv", col_names = TRUE)
-parent <- read_csv("parent.csv", col_names = TRUE)
-```
+child <- read_csv("data/child.csv", col_names = TRUE)
+parent <- read_csv("data/parent.csv", col_names = TRUE)
 
-```{r cleaning}
-# Data Cleaning
+########### Data Cleaning ###########
 
 # Remove rows that do not contain survey data
 parent <- parent[-c(1, 2),]
@@ -45,7 +24,9 @@ parent <- parent %>%
            ifelse(is.na(Q_RelevantIDDuplicate), FALSE, TRUE)) %>% 
   filter(Q_RelevantIDDuplicate != TRUE) %>% 
   # filter attn checks
-  filter(yt_opinions_4 == "A lot")
+  filter(yt_opinions_4 == "A lot") %>% 
+  # Ensure that time is numeric
+  mutate(Ptime = as.numeric(Ptime))
 
 # Child cleaning
 child <- child %>% 
@@ -62,153 +43,168 @@ parent <- parent %>%
 child <- child %>% 
   select(-c(StartDate:UserLanguage, opp, Q_BallotBoxStuffing:tg))
 
-```
-
-```{r merge}
+# Merge data frames
 youtube <- inner_join(parent, child, by = join_by(transaction_id))
-```
 
-```{r yt-factors}
-# CATEGORICAL: Dealing with Likert scales
+# Additional cleaning - favorite YouTuber
+youtube <- youtube %>% 
+  mutate(favorite = case_when(
+    favorite == "Mr beast" ~ "MrBeast",
+    favorite == "mr best" ~ "MrBeast",
+    favorite == "mr beast" ~ "MrBeast",
+    favorite == "Me beast" ~ "MrBeast",
+    is.na(favorite) ~ "None",
+    TRUE ~ favorite
+  )) %>% 
+  mutate(youtuber = ifelse(
+    favorite == "MrBeast",
+    "MrBeast",
+    "Not MrBeast"
+  ))
 
-# Forcats
+# Additional cleaning using stringr
+youtube <- youtube %>% 
+  # only keep last character in friend choice task
+  mutate(friend = str_sub(friend, start = -1, end = -1)) %>% 
+  # trim whitespace from free response
+  mutate(favorite = str_squish(favorite))
+
+########### Data Wrangling ###########
 
 # Making relevant items into factors and creating levels 
 youtube <- youtube %>% 
   # days
   mutate(days = as_factor(days)) %>% 
   mutate(days = fct_relevel(days, c("Never", 
-                "1 to 2 days a week",
-                "3 to 4 days a week",
-                "5 to 6 days a week",
-                "Every day"))) %>% 
+                                    "1 to 2 days a week",
+                                    "3 to 4 days a week",
+                                    "5 to 6 days a week",
+                                    "Every day"))) %>% 
   # Ctime
   mutate(Ctime = as_factor(Ctime)) %>% 
   mutate(Ctime = fct_relevel(Ctime, c("About 15 minutes a day", 
-                "About 30 minutes a day",
-                "About 45 minutes a day",
-                "About 1 hour a day",
-                "About 1 and 1/2 hours a day",
-                "More than 2 hours"))) %>% 
+                                      "About 30 minutes a day",
+                                      "About 45 minutes a day",
+                                      "About 1 hour a day",
+                                      "About 1 and 1/2 hours a day",
+                                      "More than 2 hours"))) %>% 
   # malleable, regularities, homophily, parasocial
   mutate(
     across(c(malleable_1, malleable_2, malleable_3, malleable_4, regularities_1, regularities_2, regularities_3, regularities_4, regularities_5, regularities_6, regularities_7, `homophily_appear_1`, `homophily_appear_2`, `homophily_appear_3`, `homophily_appear_4`, `homophily_appear_5`, `homophily_behave_1`, `homophily_behave_2`, `homophily_behave_3`, `homophily_behave_4`, `homophily_behave_6`, parasocial_1, parasocial_2, parasocial_3, parasocial_4, parasocial_5),
            ~ fct_relevel(as_factor(.),
-             "Really disagree",
-             "Disagree",
-             "I don't know",
-             "Agree",
-             "Really  agree"
+                         "Really disagree",
+                         "Disagree",
+                         "I don't know",
+                         "Agree",
+                         "Really  agree"
            )))  %>% 
   # outgroup-freq
   mutate(`outgroup_freq` = as_factor(`outgroup_freq`)) %>% 
   mutate(`outgroup_freq` = str_trim(`outgroup_freq`)) %>% 
   mutate(`outgroup_freq` = fct_relevel(`outgroup_freq`, c("Never",
-                "Rarely",
-                "Sometimes",
-                "Often",
-                "Very often")))
+                                                          "Rarely",
+                                                          "Sometimes",
+                                                          "Often",
+                                                          "Very often")))
 
-```
-```{r}
+# Adding additional variables
 youtube <- youtube %>% 
+  # Making a binary 'daily' variable
   mutate(
     daily = ifelse(
       days == "Every day",
       "Every Day",
       "Not Every Day"
-    )
-  ) %>% 
-  mutate(Ptime = as.numeric(Ptime))
-```
-
-```{r}
-youtube <- youtube %>% 
+    )) %>% 
+  # Making a binary 'race' variable
   mutate(
     race = ifelse(
       race_ethnicity == "White",
       "White",
-      "POC"
-    )
-  )
-```
+      "Non-White"
+    ))
 
-
-```{r recoding}
+# Recoding factor variables as numeric variables to create aggregate scores
 youtube <- youtube %>% 
   mutate(
     across(c(`homophily_appear_1`, `homophily_appear_2`, `homophily_appear_3`, `homophily_appear_4`, `homophily_appear_5`, `homophily_behave_1`, `homophily_behave_2`, `homophily_behave_3`, `homophily_behave_4`, `homophily_behave_6`, parasocial_1, parasocial_2, parasocial_3, parasocial_4, parasocial_5),
            ~ recode (.,
-             "Really disagree" = 1,
-             "Disagree" = 2,
-             "I don't know" = 3,
-             "Agree" = 4,
-             "Really agree" = 5
+                     "Really disagree" = 1,
+                     "Disagree" = 2,
+                     "I don't know" = 3,
+                     "Agree" = 4,
+                     "Really agree" = 5
            ))) %>% 
   mutate(
     across(c(malleable_1, malleable_2, malleable_3, malleable_4),
            ~ recode(.,
-             "Really disagree" = 1,
-             "Disagree" = 2,
-             "Neither agree nor disagree" = 3,
-             "Agree" = 4,
-             "Really agree" = 5
+                    "Really disagree" = 1,
+                    "Disagree" = 2,
+                    "Neither agree nor disagree" = 3,
+                    "Agree" = 4,
+                    "Really agree" = 5
            ))) %>%  
   mutate(
     across(c(regularities_1, regularities_2, regularities_3, regularities_4, regularities_5, regularities_6, regularities_7),
            ~ recode(.,
-             "Really disagree" = 1,
-             "Disagree" = 2,
-             "Neither agree nor disagree" = 3,
-             "Agree" = 4,
-             "Really  agree" = 5
+                    "Really disagree" = 1,
+                    "Disagree" = 2,
+                    "Neither agree nor disagree" = 3,
+                    "Agree" = 4,
+                    "Really  agree" = 5
            ))) %>%  
   select(-c(homophily_behave_5))
-```
 
-```{r stringr}
-# Cleaning using stringr
-youtube <- youtube %>% 
-  # only keep last character in friend choice task
-  mutate(friend = str_sub(friend, start = -1, end = -1)) %>% 
-  # trim whitespace from free response
-  mutate(favorite = str_squish(favorite))
-```
-
-```{r birthdays}
+### Dealing with birthdays - obtaining child age
+# Today's date
 date_today <- Sys.Date() 
 
+# Birthday function (obtained with help from chatGPT)
+# function takes arguments: data frame, column, and object (date today)
 birthday <- function(df, column_name, date_today) {
   df <- df %>%
     mutate(
-      # Convert valid date strings to Date format
+      # Convert valid date strings to Date format in new column
       bday_date = if_else(
+        # Search for RegEx of "xx/xx/xxxx" form in the indicated column
         grepl("^\\d{2}/\\d{2}/\\d{4}$", .[[column_name]]), 
+        # If there is a string in such a form, return a date in the form of mm/dd/yyyy
         as.Date(.[[column_name]], format = "%m/%d/%Y"), 
+        # Otherwise, keep objects as NA of form 'date'
         NA_Date_
       ),
       
-      # Extract last 4 characters for non-date values
+      # Extract last 4 characters for non-date values in new column
       bday_year = if_else(
+        # If NA in bday_date,
         is.na(bday_date), 
+        # Take the only the last 4 characters (year)
         as.numeric(substr(.[[column_name]], nchar(.[[column_name]]) - 3, nchar(.[[column_name]]))), 
+        # Otherwise, keep NA as numeric objects
         NA_real_
       ),
       
-      # Calculate age based on actual date or extracted year
+      # Calculate age based on actual date or extracted year in new column
       age = if_else(
+        # If not an NA value in bday_date
         !is.na(bday_date), 
+        # If in date form, take difference between today's date and bday_date, and convert to years
         as.numeric(difftime(date_today, bday_date, units = "days")) / 365.25, 
+        # If otherwise, subtract the year obtained in bday_year from this year 
         2025 - bday_year
       )
     ) %>%
-    select(-bday_date, -bday_year)  # Remove intermediate columns
-
+    
+    # Remove intermediate columns
+    select(-bday_date, -bday_year)  
+  
   return(df)
 }
 
+# Apply birthday function to YouTube data frame
 youtube <- birthday(youtube, "bday", date_today)
 
+# Determine whether or not an age is within age range
 youtube <- youtube %>% 
   mutate(
     in_range = case_when(
@@ -216,11 +212,8 @@ youtube <- youtube %>%
       age >= 14 ~ FALSE
     )
   )
-```
 
-
-```{r}
-# Composite scores
+### Composite scores
 # Racial attitudes score -- total possible score = 20
 youtube <- youtube %>% 
   mutate(malleable_score = rowSums(across(malleable_1:malleable_4))) %>% 
@@ -249,10 +242,6 @@ youtube <- youtube %>%
   # Score
   mutate(regularity_score = rowSums(across(regularities_1:regularities_7))) %>% 
   mutate(regularity_score = regularity_score/35)
-```
 
-
-```{r}
-write_csv(youtube, "youtube.csv")
-```
-
+### 
+write_csv(youtube, "data/youtube.csv")
