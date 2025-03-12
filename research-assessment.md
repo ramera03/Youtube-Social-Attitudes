@@ -32,11 +32,11 @@ Section: 2
 
 Research project title: YouTube Kids: The Effect of YouTube on Children’s Racial Learning
 
-Submission date: 02/26/2025
+Submission date: 03/12/2025
 
-Submission number (1-4): 1
+Submission number (1-4): 2
 
-Project GitHub repository URL: https://github.com/ramera03/youtubeattitudes_d2mr
+Project GitHub repository URL: https://github.com/ramera03/Youtube-Social-Attitudes
 
 Filename of manuscript .qmd: manuscript.qmd
 
@@ -45,10 +45,11 @@ Filename of knitted .pdf: manuscript.pdf
 
 ## AI Statement
 
-Describe whether and how you used AI/LLMs when completing this project: I used AI, particularly ChatGPT to parse error messages when using Quarto. I used ChatGPT to troubleshoot, and fix render-related errors accordingly.
+Describe whether and how you used AI/LLMs when completing this project: 
+I used ChatGPT to help me generate complex functions. I would specify exactly what I wanted the function to do, and then adapt/comment the ChatGPT output to better fit my needs. Such functions include: birthday (calculating participant age based on particular data forms), return_alpha (returns Cronbach's Alpha for subsets of columns), report_anova (function which reports formatted ANOVA results). Functions generated with ChatGPT help has been commented as such. I also used ChatGPT to help create a reliability data frame, and for specific coding questions (e.g. how do I add sums to a contingency table?). Lastly, I used ChatGPT for troubleshooting and render errors (I was having trouble parsing errors related to Lua files. Chat was ultimately unhelpful - I found out that the Lua parts of apaquarto might just be incompatible with library(patchwork)). 
 
 Optionally (for engagement points) reflect on your use of AI:
-I attempted some knits before my final render, and ran into quite a few issues. As I am unfamiliar with and kind of confused by BibTex and Quarto, I ran into issues with rendering such as 'objects not found' and errors related to r-references. ChatGPT was very useful in helping me parse such messages and create solutions. 
+AI has been a huge time saver throughout this process, particularly in terms of small bugs and quick questions. Where otherwise one might read through many Stackexchange posts in hope that someone might have the same error as you, ChatGPT makes it quite easy to obtain (though not always correct) resources and answers related to your specific issue. Also, as someone who is relatively new to R, I can often picture exactly what I want my functions to do, but as I am less familiar with more complex syntax, I have trouble creating functions that do exactly what I want. Tweaking generated functions has been especially helpful in this regard, and I feel like I have been able to build on my R syntactical knowledge as a result. 
 
 
 ## Overall requirements
@@ -140,16 +141,17 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 
         -   [x] Objective attempt
         -   [x] Objective met
-        -   Grader comments: See preparation.rmd lines 9-12 -- ND: your preparation file should be an .R script, not a notebook
+        -   Grader comments: 
         
 6.  Use arithmetic, comparison, and logical operators
 
     1. Uses all three types of operators
     2. Uses multiple operators in data transformation pipelines and/or inline R code
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
+        For logical operators, see preparation.R lines 24-25. For comparison, see preparation.R lines 208-214, as well as fig-malleable and fig-regularity in .qmd. For arithmetic, see lines 220-244, as well as in line elements in .qmd.
 
 7.  Parse and define functions and arguments
 
@@ -157,7 +159,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. User-defined function(s) run(s) without error and produces expected output in at least 2 contexts
     3. Functions are well-documented with comments
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -166,9 +168,10 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     1. Uses conditional in multiple contexts, including dplyr pipelines
     2. Uses multiple types of conditional/loop functions (e.g., `if_else()`, `case_when()`, `for`, `while`)
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
+        See chunk labeled reliability-dataframe for one instance of case_when. See preparation.R lines 162-214 for another instance of case_when, and an if_else. See preparation.R lines 111-125 for ifelse. 
         
 
 9.  Use `readr` functions to read in and write out data
@@ -179,7 +182,8 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 
         -   [x] Objective attempt
         -   [x] Objective met
-        -   Grader comments: in qmd, but also see preparation.Rmd lines 16-17 and 197
+        -   Grader comments: 
+        See preparation.R line 247 for writing out data. 
 
 10. Use `dplyr` and `tidyr` functions to transform data
 
@@ -189,16 +193,16 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 
         -   [x] Objective attempt
         -   [x] Objective met
-        -   Grader comments: see preparation.Rmd (this is most of the document)
+        -   Grader comments: see preparation.R (this is most of the document)
 
 11. Use `stringr` functions to work with string variables
 
     1. Uses ate least 2 unique `stringr` functions 
     2. Uses `stringr` functions in a data transformation pipeline
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
-        -   Grader comments: 
+        -   Grader comments: see preparation.R lines 68-70, line 103.
 
 12. Use `forcats` functions to work with factor variables
 
@@ -208,7 +212,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 
         -   [x] Objective attempt
         -   [x] Objective met
-        -   Grader comments: see preparation.Rmd lines 77-120
+        -   Grader comments: see preparation.R lines 74-108
 
 ### Data visualization with ggplot2
 
@@ -217,7 +221,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     1. Creates at least 2 figures with different `geom_*` layers (e.g., a scatter plot and a bar plot)
     2. At least one plot is multi-variable
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -225,7 +229,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 
     1. Uses at least 2 unique data-mapped `aes()` arguments (e.g., color, shape, size) to group data in a plot in one or multiple plots
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -237,7 +241,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Combines facets with other dynamic grouping aesthetics
       1. If data only includes 1 sensible grouping variable, it may be used for both the faceting and groupin aes.  
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -248,7 +252,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Variables and labels display in plain English (e.g., "Age (years)" not "child_age_yrs"
     4. Uses at least 1 static aesthetic (e.g., color, shape, size) that improves visual clarity without mapping to data
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -261,7 +265,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Presents results in narrative text, table, or plot
     - NOTE: This objective may be met with only numeric or non-numeric summaries if they are sufficiently complex (at Dr. Dowling's discretion)
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -272,7 +276,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Presents results in narrative text, table, or plot
     - NOTE: This objective may be met with only numeric or factor data analyses if they are sufficiently complex (at Dr. Dowling's discretion)
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -309,7 +313,8 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
 
         -   [x] Objective attempt
         -   [ ] Objective met
-        -   Grader comments: 2 very small changes needed:
+        -   Grader comments: 
+        2 very small changes needed:
             1.  add a \clearpage line above # References
             2.  proof your in text references. in particular I'm seeing that your bib file thinks D. Hughes is a different person from D.L. Hughes and giving too much in-text information as a result
 
@@ -333,7 +338,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Sets preferences/options in at least 1 code chunk
     4. Organizes setup chunks sensibly
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
         
@@ -346,9 +351,10 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     5. References render without error and link to the correct table/figure in pdf/html output
     - NOTE: Ideally your table(s) should be produced in APA7 style, but this is not a strict requirement. At a minimum, they should render as formatted tables (not raw output), have readable and correctly formatted text (e.g., column headers should be capitalized and in plain english, not literal variable names), and the table must be dynamically referenced in the text.
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
+        Due to The Apaquarto Table Bug, I have two table 1s. 
 
 25. Execute descriptive and inferential analyses in code chunks
 
@@ -358,7 +364,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. Results are not displayed as raw R output
     5. Chunks are organized sensibly and appear near the text they support
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -380,7 +386,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. Includes at least 1 footnote
     - NOTE: This is going to be one of the most flexible objectives to demonstrate.  You need to demonstrate a range of markdown skills and use them to make a readable, informative manuscript. Hitting the four points above should do that, but you can use your judgment about what kind of markdown features will best serve your project. No matter what, you should use markdown to follow APA7 guidelines.
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -390,7 +396,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Replaces static text with inline R references in at least 1 character context
     3. Ideally, uses inline R references for *all* data-dependent text
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:
 
@@ -409,7 +415,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. PDF renders without error and includes all text, tables, and figures
     4. No additional steps are needed (e.g., finding data, determining necessary packages to install and load, running unsourced scripts, correcting aboslute paths)
 
-        -   [ ] Objective attempt
+        -   [x] Objective attempt
         -   [ ] Objective met
         -   Grader comments:        
    
@@ -424,7 +430,8 @@ Optionally (for engagement points) write a brief reflection about your work on t
 - What did you learn from this project that you will carry forward to future projects?
 - What are you most proud of in this project?
 
-To be honest, this entire project has been challenging, but I'll highlight some of the most challenging aspects here. First, understanding how to use Quarto has been an exercise in trial and error. Understanding what to include in code chunks and where, as well as knowing how things will render, are definitely my weak points. The second particularly challenging aspect of this project has been integrating all of the objectives. I have had to be creative in thinking of ways to integrate all of the objectives into my workflow which would have otherwise not necessitated using certain things. Lastly, I am a bit rusty in my statistics/data analysis, so relearning that has been challenging. 
+In my last reflection, I expressed feeling like this project was particularly challenging in quite a few ways. Though this project has been challenging, it has been quite rewarding. For instance, this project has given me an opportunity to seriously engage with and analyze my pilot sample data, allowing me to integrate necessary questionnaire changes before I run my full sample. As such, I will be able to streamline data cleaning and analysis in a way that I was unable to in my pilot (just to clarify, I am not changing questions based on results, more so changing questions to make my data workflow easier in the future). In a sense, this is an opportunity to start over, and implement things I would do differently. 
+I have learned quite a bit from this project otherwise, particularly in terms of R proficiency and how to create maximally organized and reproducible work (e.g. using relative paths, adding extensive comments, one-chunk-one-thing). I plan to take these R skills and the D2MR workflow with me into future projects. Further, as I continue to work on my thesis, I will build upon the work I have done here. I am happy to be walking away not only with newfound R and GitHub proficiency, but with the basis for my upcoming thesis draft. I look forward to continue building this project a finalized version! 
 
 Alternatively/additionally in mind some of the suggested ways to earn engagement points, and expand on this (or other aspects of your project) in your reflection:
 
@@ -435,7 +442,8 @@ Alternatively/additionally in mind some of the suggested ways to earn engagement
 - Having a maximally reproducible and dynamic manuscript
 - Fully committing to best practices for version control and GitHub integration/organization
 
-I plan to ensure that my final version has a) thoughtful narrative writing and b) creating beautiful and complex visualizations. Currently, I believe that I have fully committed to GitHub/version control best practices thus far and to the best of my abilities. I plan to integrate my final repo into a public website. 
+I am a GitHub convert. After many years of disorganized Google drives, I have really appreciated having all materials related to my thesis in one unified place, and I have fully committed to organizing and using this GitHub to the best of my abilities. 
+I also attempted to make my manuscript as dynamic as possible, placing data dependent text wherever I could. As this project was completed only with pilot data, I hope to be able to use much of what I have with my full sample. 
 
 
 ## Grading
