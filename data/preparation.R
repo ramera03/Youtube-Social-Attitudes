@@ -243,5 +243,5 @@ youtube <- youtube %>%
   mutate(regularity_score = rowSums(across(regularities_1:regularities_7))) %>% 
   mutate(regularity_score = regularity_score/35)
 
-### 
+### Write out data set
 write_csv(youtube, "data/youtube.csv")
