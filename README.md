@@ -5,6 +5,12 @@ This repository contains the data, analysis, and final thesis manuscript for Rei
 **Folders**: 
 1. *_extensions*: APA Quarto extensions
 2. *data*: Everything data-related for this project, including data sets used, intermediate data sets created, and data preparation 
+  - Original data sets:
+     - *parent.csv*: Anonymized parent survey responses
+     - *child.csv*: Anonymized child survey responses
+  - Intermediate data set: 
+     - *youtube.csv*: Merged data frame containing cleaned and wrangled original data sets
+  - *preparation.R*: All data transformations made in preparation for final .qmd document
 3. *manuscript_files*: Files associated with knitting and rendering 
 
 **Bib Files**
@@ -20,5 +26,5 @@ This repository contains the data, analysis, and final thesis manuscript for Rei
 ***Research Question:*** *To what extent does YouTube usage affect children's racial attitudes?* To answer this question, I will conduct a parent/child dyadic questionnaire regarding children's YouTube usage, their observations of racial regularities, and their favorite YouTubers. 
 
 ## Description of Data:
-Survey data from parent and child questionnaires, largely Likert scale and multiple choice numerical and categorical data. 
+Anonymized pilot survey data from parent and child questionnaires, largely Likert scale and multiple choice numerical and categorical data. 
 
