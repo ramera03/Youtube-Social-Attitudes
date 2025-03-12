@@ -3,15 +3,15 @@ This repository contains the data, analysis, and final thesis manuscript for Rei
 
 ## Guide to Repository:
 **Folders**: 
-1. *_extensions*: APA Quarto extensions
-2. *data*: Everything data-related for this project, including data sets used, intermediate data sets created, and data preparation 
+1. ***_extensions***: APA Quarto extensions
+2. ***data***: Everything data-related for this project, including data sets used, intermediate data sets created, and data preparation 
   - Original data sets:
      - *parent.csv*: Anonymized parent survey responses
      - *child.csv*: Anonymized child survey responses
   - Intermediate data set: 
      - *youtube.csv*: Merged data frame containing cleaned and wrangled original data sets
   - *preparation.R*: All data transformations made in preparation for final .qmd document
-3. *manuscript_files*: Files associated with knitting and rendering 
+3. ***manuscript_files***: Files associated with knitting and rendering 
 
 **Bib Files**
 1. *bibliography.bib*: Academic references used in this manuscript
