@@ -9,9 +9,15 @@ author:
   - id: id1
     name: "University of Chicago"
     department: MA Program in the Social Sciences
+    address: "1155 E 60th St."
+    city: Chicago
+    region: IL
+    country: USA
+    postal-code: 60637
+abstract: "One way in which children learn about group dynamics within their racial world is from patterns in their daily environments. The current study seeks to understand the degree to which YouTube, a popular form of social media, exposes children to negatively valenced racial patterns, and potentially affects their beliefs. Dyads of parents and 8-13 year-old children (N = 18) describe daily YouTube usage, and the effects of children's YouTube usage are assessed. In the present sample, there is no relationship between children's YouTube usage, racial patterns they may observe, and negative racial beliefs."
 floatsintext: true
 numbered-lines: false
-bibliography: [r-references.bib, MA_THESIS.bib]
+bibliography: [r-references.bib, bibliography.bib]
 link-citations: true
 draft-date: false
 lang: en
@@ -34,9 +40,6 @@ format:
     keep-tex: true
     list-of-figures: true
     list-of-tables: true
-    fig-width: 2
-    fig-height: 2
-    out-width: 40%
 editor: visual
 ---
 
@@ -44,14 +47,22 @@ editor: visual
 #| label: setup
 #| include: false
 
+# Necessary libraries
 library(svglite)
 library(papaja)
 library(knitr)
 library(broom)
+#install.packages(kableExtra)
 library(kableExtra)
 library(flextable)
 library(psych)
 library(tidyverse)
+
+# Setting global options
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE)
 
 # Generate or overwrite r-reference files
 # papaja::r_refs(file = "r-references.bib")
@@ -63,9 +74,6 @@ youtube <- read_csv("data/youtube.csv", col_names = TRUE)
 
 ```{r}
 #| label: my-theme
-#| echo: false
-#| message: false
-#| warning: false
 
 my_theme <- function(){
   theme(
@@ -102,7 +110,7 @@ my_theme <- function(){
 
 Is YouTube making kids more racist? Despite sounding like the cultural fear-mongering often associated with screen time and development, such a question refers to real concerns that psychological research has yet to address: what are children really learning from YouTube, particularly with regard to race?
 
-### Literature Review {#sec-lit-review}
+## Literature Review {#sec-lit-review}
 
 Much of the literature on how children learn about their racial world places great emphasis on the transmission of information that is explicitly about race: how parents talk about members of other racial groups, how and whether schools portray the histories of marginalized groups, how peers may communicate stereotypes, etc. [@hugheswatford_2022_racial]. In this view, ethnic-racial socialization, or the ways in which agents transmit messages about ethnicity and race to children, occurs through direct verbal instruction. However, in addition to more explicit transmissions of racial knowledge, children are simultaneously exposed to a barrage of more implicit environmental inputs—who they live near, for instance, or who they see on screens—which may also affect these conceptions [@hughesetal_2023_growing]. 
 
@@ -114,7 +122,7 @@ Despite massive popularity, research on the effects of YouTube and other forms o
 
 While there is a body of research aimed at understanding how certain aspects of children’s environments contribute to the formation of racial attitudes, there is not as much focus on how YouTube, or other social media platforms, function as sites of racial socialization and learning via racial regularities. Similarly, though there have been some content analyses regarding the racial character of YouTube videos, such studies have yet to be done in conjunction with psychological measures of racial beliefs and attitudes. Due to this lack of research into how social media ecologies contribute to kids’ racial beliefs, I thus ask the question: are children for whom stereotypical social media is a part of their daily environment more likely to develop stereotyping or prejudicial racial beliefs and attitudes?
 
-### Present Study {#sec-present-study}
+## Present Study {#sec-present-study}
 
 This study will examine the relationship between YouTube usage and children’s development of racial attitudes, so as to understand whether and the degree to which YouTube may be a site of ethnic-racial socialization where children develop prejudices against those of other races. 
 
@@ -124,7 +132,7 @@ One additional factor that may moderate the relationship between time spent on Y
 
 # Methods {#sec-methods}
 
-### Participants and Procedures {#sec-participants-and-procedures}
+## Participants and Procedures {#sec-participants-and-procedures}
 
 This study includes dyads of parents and children between the ages of 8 and 13 [^1]. Though children may express negative racial attitudes prior to this point in development, during early adolescence, children develop the ability to recognize and reflect on the racial patterns and dynamics present in their environments [@hugheswatford_2022_racial]. As such, this age range allows me to observe how the observation racial regularities present on YouTube may affect children’s stereotyping and prejudicial attitudes, and how such a phenomenon develops. Participants were recruited through Qualtrics Panels, allowing me to obtain a representative sample of parents and children; other studies have used Qualtrics Panels with similar methods and populations [@byrdahn_2020_profiles]. 
 
@@ -132,7 +140,7 @@ This study includes dyads of parents and children between the ages of 8 and 13 [
 
 Pilot data has been collected in March of 2025 from families recruited via Qualtrics Panels (*N* = `r length(youtube$transaction_id)`). Participating families receive two Qualtrics surveys to be completed asynchronously, and receive compensation (as determined by Qualtrics Panels) after both surveys have been completed. First, parents complete a demographics and YouTube usage survey, then children complete their own survey.
 
-### Measures {#sec-measures}
+## Measures {#sec-measures}
 
 In the parent survey, participants answer questions related to parent and child demographics (child age, race/ethnicity, parent income and level of education, etc), as well as questions regarding their child’s YouTube usage (for instance, time spent on YouTube, as reported by their child’s device screen time). 
 
@@ -145,14 +153,13 @@ The particular measures used in the child survey are as follows:
 3. Parasocial interaction with a YouTuber (adapted from @sungetal_2023_shes)
 4. Racial regularities (created based on @rollinsetal_2022_who)
 5. Friend choice (adapted from @amemiyabian_2024_why)
-All measures used in adult studies have been specifically adapted for child readability. 
+
+All measures used in adult studies have been specifically adapted for child readability. @tbl-reliability reports the reliability of all questionnaires used, within the present sample. 
 
 ```{r}
 #| label: report-reliability-function
-#| echo: false
-#| message: false
-#| warning: false
 
+# Function which returns Cronbach's alpha
 return_alpha <- function(data, cols) {
   # select data 
   selected_data <- data %>% select(all_of(cols))
@@ -164,11 +171,9 @@ return_alpha <- function(data, cols) {
 ```
 
 ```{r}
-#| label: reliability-df
-#| echo: false
-#| message: false
-#| warning: false
+#| label: reliability-dataframe
 
+# Creating a list of all measures, grouped by questionnaire
 measures <-
   list(
   "Group Malleability" = c("malleable_1", "malleable_2", "malleable_3", "malleable_4"),
@@ -178,11 +183,13 @@ measures <-
   "Racial Regularities" = c("regularities_1", "regularities_2", "regularities_3", "regularities_4", "regularities_5")
 )
 
+# Creating data frame with measures and corresponding alpha
 reliability <- data.frame(
   Measure = names(measures),
   Alpha = sapply(measures, function(cols) return_alpha(youtube, cols))
 )
 
+# Adding column with evaluations of alpha
 reliability <- reliability %>%
   mutate(Alpha = round(Alpha, digits = 2)) %>% 
   mutate(
@@ -197,35 +204,33 @@ reliability <- reliability %>%
   )
 ```
 
-
 ```{r}
 #| label: tbl-reliability
-#| tbl-cap: "Questionnaire Reliability"
-#| echo: false
-#| message: false
-#| warning: false
+#| tbl-cap: "Reliability of Questionnaires"
 
 # Generate table
 kable(reliability, 
       align = c("c", "c", "c"),
+      # Setting caption here
       caption = "Reliability (assessed through Cronbach's Alpha) of questionnaires used, within sample") %>% 
   kable_styling(position = "center", latex_options = c("striped"))
 
 ```
 
-@tbl-reliability reports the reliability of all questionnaires used, within the present sample. 
+Beliefs about groups, particularly in terms of group malleability, were chosen as the primary outcome measure to assess racial attitudes. Such questions, adapted from @halperinetal_2012_promoting, address whether children have fixed or malleable views regarding outgroups (e.g. when prompted to think about groups with different skin colors than their own, children are asked the extent to which they agree with the statement, "These groups of people can't really change the way they act"). Higher scores in this domain demonstrate more fixed evaluations of outgroup members, suggesting an underlying racial essentialism, or a belief in the intrinsic nature of racial difference [@waxman_2021_racial].
+
+Composite scores have been created for each measure. All analyses have been completed in RStudio [@R-base], primarily within the tidyverse and psych packages (@R-tidyverse; @R-psych). 
 
 # Results {#sec-results}
 
-Looking first to the distributions of time spent on YouTube among  participants, just as many children use YouTube every day as (*N* = `r sum(youtube$daily == 'Every Day')`) as those who do not (*N* = `r sum(youtube$daily == 'Not Every Day')`). And, as shown in @fig-time-distribution, children who use YouTube every day appear to use YouTube for more time on an average day than children who do not. On average, children spend about `r round(mean(youtube$Ptime), digits = 0)` minutes, or `r round(mean(youtube$Ptime)/60, digits = 0)` hour, on YouTube on an average day. 
+Looking first to the distributions of time spent on YouTube among  participants, just as many children use YouTube every day as (*N* = `r sum(youtube$daily == 'Every Day')`) as those who do not (*N* = `r sum(youtube$daily == 'Not Every Day')`). And, as shown in @fig-time-distribution, children who use YouTube every day appear to use YouTube for more time on an average day than children who do not. On average, parents report that children spend about `r round(mean(youtube$Ptime), digits = 0)` minutes, or `r round(mean(youtube$Ptime)/60, digits = 0)` hour, on YouTube on an average day. Some children, as parents report, watch as much as `r round(max(youtube$Ptime)/60, digits = 0)` hours of YouTube, while others watch only `r round(min(youtube$Ptime)/60, digits = 0)`. Children's self-report YouTube usage reflects a similar pattern, as shown in @tbl-frequency: the majority of participants report watching YouTube for 30 minutes to 1 hour each day.
 
 ```{r}
 #| label: fig-time-distribution
-#| fig-cap: "Distribution of watch time for kids"
+#| fig-cap: "Distribution of participants' YouTube watch time"
 #| fig-align: "center"
-#| echo: false
-#| message: false
-#| warning: false
+#| fig-width: 6
+#| fig-height: 4 
 
 # Set figure output settings - renders really small
 
@@ -236,7 +241,7 @@ ggplot(subset(youtube, !is.na(Ctime)), aes(x = Ctime)) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1)
   ) +
-  labs(x = "Time Spent on YouTube",
+  labs(x = "Time Spent on YouTube (Self-Reported)",
        y = "Number of Participants",
        title = "Time Spent on YouTube on an Average Day",
        subtitle = "Comparing children who use YouTube every day and children who do not") +
@@ -244,99 +249,195 @@ ggplot(subset(youtube, !is.na(Ctime)), aes(x = Ctime)) +
 
 ```
 
-To what extent is time spent on YouTube predictive of how often children observe racial regularities?
-
 ```{r}
-summary(aov(regularity_score ~ Ctime, data = youtube))
-summary(aov(regularity_score ~ outgroup_freq, data = youtube))
+#| label: generate-frequency-table
+
+frequency <- round(addmargins(prop.table(table(youtube$Ctime, youtube$daily))), 2)
 ```
 
 ```{r}
-summary(aov(malleable_score ~ Ctime, data = youtube))
-summary(aov(malleable_score ~ outgroup_freq, data = youtube))
+#| label: tbl-frequency
+#| tbl-cap: "YouTube Screen Time Frequency Table"
+
+kable(frequency, 
+      align = c("c", "c", "c"),
+      # Setting caption here
+      caption = "Proportions of watch times in children who watch YouTube every day vs those who do not") %>% 
+  kable_styling(position = "center", latex_options = c("striped"))
 ```
 
-To what extent is time spent on YouTube predictive 
-
 ```{r}
-#| label: regression 
-#| echo: false
-#| message: false
-#| warning: false
+#| label: anova-outputs
 
-# BASED ON APAQUARTO DEMO - WILL CHANGE FOR FINAL; WANTED TO TEST RENDERING
+# ANOVA: racial regularities score predicted by time spent on YT (categorical self-report)
+aov_reg_ctime <- aov(regularity_score ~ Ctime, data = youtube)
 
+# ANOVA: racial regularities score predicted by perceptions of how often kids see outgroup (categorical)
+aov_reg_outfreq <- aov(regularity_score ~ outgroup_freq, data = youtube)
 
-
-# regression model
-model <- lm(malleable_score ~ Ptime, data = youtube)
-
-summary(lm(malleable_score ~ regularity_score, data = youtube))
-
-t.test(malleable_score ~ race, data = youtube)
-t.test(regularity_score ~ race, data = youtube)
-
-t.test(malleable_score ~ daily, data = youtube)
-t.test(regularity_score ~ daily, data = youtube)
+# ANOVA: racial regularities score predicted by perceptions of how often kids see outgroup (categorical)
+aov_mall_outfreq <- aov(malleable_score ~ outgroup_freq, data = youtube)
 ```
 
-
-
 ```{r}
-#| label: regression-report-functions
-#| echo: false
-#| message: false
-#| warning: false
+#| label: anova-report-function
 
-# BASED ON APAQUARTO DEMO - WILL CHANGE FOR FINAL; WANTED TO TEST RENDERING AND TRY INLINE REFERENCES
+# based on apaquarto manuscript example and chat help
 
-# report_regression takes a lm model object as an argument
-# and returns a string of format:
-# "$F$(df, df.residual) = F-value, $p$ = p-value, $R^2$ = r-squared"
-report_regression <- function(model) {
-    
-  # Extract coefficients and p-values
-  m_glance <- glance(model)
+# Takes an aov model object as argument
+# Returns string of format "$F$(df1, df2) = F-value, $p$ = p-value"
 
-  # Format the p-value
-  p_value <- apa_p(m_glance$p.value, add_equals = TRUE)
-  
+report_anova <- function(model) {
+
+  # make summary object
+  m_summary <- summary(model)[[1]]
+  # extract values
+  df1 <- m_summary$Df[1]
+  df2 <- m_summary$Df[2]
+  F_value <- m_summary$`F value`[1]
+  p_value <- m_summary$`Pr(>F)`[1]
   # Create a string with the results
   report <- paste0("$F$(", 
-                   m_glance$df, 
-                   ", ", m_glance$df.residual, 
-                   ") = ", round(m_glance$statistic, 2), 
-                   ", $p$ = ", p_value, ", $R^2$ = ", round(m_glance$r.squared,2))
-  
+                   df1,  ", ", 
+                   df2, ") = ", 
+                   round(F_value, 2), 
+                   ", $p$ = ", round(p_value, 3))
+  # Return report
   return(report)    
 }
 
 ```
 
-Below is a simple regression displaying the relationship between time spent on YouTube and a child's racial attitudes. Despite a visual upward trend, this relationship is not statistically significant: `r report_regression(model)`. 
+Preliminary one-way analysis of variance does not indicate that greater amounts of time spent on YouTube (self-report) is associated with a higher racial regularities score (`r report_anova(aov_reg_ctime)`). Similarly, thus far, one-way analysis of variance does not indicate that there is any association between ratings of frequency with which children encounter those of other racial groups and racial regularities scores, (`r report_anova(aov_reg_outfreq)`). Further, one-way analysis of variance does not indicate a significant relationship between the primary racial attitudes outcome measure, group malleability, and frequency of seeing racial outgroups on YouTube, (`r report_anova(aov_mall_outfreq)`). 
 
 ```{r}
-#| label: fig-regression-plot
-#| fig-cap: "Simple Correlation Between Time Spent on YouTube and Racial Attitudes score"
-#| fig-scap: "Time v. Attitudes"
+#| label: regression-models
+
+# Regressing malleability against time spent on YouTube (reported by parents)
+lm_mt <- lm(malleable_score ~ Ptime, data = youtube)
+
+# Regressing malleability against time spent on YouTube (reported by parents) and whether or not YouTube is used daily
+lm_mtd <- lm(malleable_score ~ Ptime + daily, data = youtube)
+
+# Regressing malleability against regularity
+lm_mr <- lm(malleable_score ~ regularity_score, data = youtube)
+```
+
+```{r}
+#| label: regression-report-functions
+
+# Taken from apaquarto demo 
+
+# report_regression takes a lm model object as an argument
+# Returns string of format: "$F$(df, df.residual) = F-value, $p$ = p-value, $R^2$ = r-squared"
+
+report_regression <- function(model) {
+    
+  # Extract coefficients and p-values
+  m_glance <- glance(model)
+  # Format the p-value
+  p_value <- apa_p(m_glance$p.value, add_equals = TRUE)
+  # Create a string with the results
+  report <- paste0("$F$(", 
+                   m_glance$df, 
+                   ", ", m_glance$df.residual, 
+                   ") = ", round(m_glance$statistic, 2), 
+                   ", $p$ = ", p_value)
+  # Return report
+  return(report)    
+}
+```
+
+Regressing malleability scores against parent reports of time spent on YouTube, no significant relationship is observed (`r report_regression(lm_mt)`). . This relationship remains unchanged and similarly insignificant when daily use is added as a predictor (`r report_regression(lm_mtd)`). Such relationships, as well as that of regularity score and YouTube usage, may be observed in @fig-malleable and @fig-regularity. Based on pilot sample alone, there is not enough data to conduct analyses with regard to the effect of YouTuber on racial attitudes, but the modal favorite YouTuber reported has thus far been `r mode(youtube$favorite)` (*N* = `r sum(youtube$favorite == 'MrBeast')`). Preliminary relationships between favorite YouTuber (this YouTuber in particular) as well as malleability and regularity scores may be found in @fig-malleable and @fig-regularity respectively. 
+
+```{r}
+#| label: fig-malleable
+#| fig-cap: "Correlations Between Time Spent On YouTube and Group Malleability Beliefs"
+#| fig-scap: "Effects of time, daily use, and favorite YouTuber"
+#| fig-note: "MrBeast is the modal favorite YouTuber. No other YouTuber has been listed with enough frequency to report."
 #| fig-align: "center"
-#| fig-width: 6
-#| fig-height: 4
-#| echo: false
-#| message: false
-#| warning: false
+#| fig-width: 5
+#| fig-height: 2
+
+ggplot(data = youtube %>% 
+             filter(Ptime > 10)) +
+  aes(x = Ptime, y = malleable_score) +
+  facet_grid(~ daily, scales = "free_x") +
+  stat_smooth(method = "lm", color = "#800000") +
+  geom_point(aes(shape = youtuber)) +
+  scale_shape_manual(values = c("Not MrBeast" = 16, "MrBeast" = 1)) +
+  labs(x = "Time Spent on YouTube (minutes)", y = "Malleability Score",
+       shape = "Favorite YouTuber") +
+  my_theme()
+```
+
+```{r}
+#| label: fig-regularity
+#| fig-cap: "Correlations Between Time Spent On YouTube and Racial Regularities"
+#| fig-scap: "Effects of time, daily use, and favorite YouTuber"
+#| fig-note: "MrBeast is the modal favorite YouTuber. No other YouTuber has been listed with enough frequency to report."
+#| fig-align: "center"
+#| fig-width: 5
+#| fig-height: 2
+
+ggplot(data = youtube %>% 
+             filter(Ptime > 10)) +
+  aes(x = Ptime, y = regularity_score) +
+  facet_grid(~ daily, scales = "free_x") +
+  stat_smooth(method = "lm", color = "#800000") +
+  geom_point(aes(shape = youtuber)) +
+  scale_shape_manual(values = c("Not MrBeast" = 16, "MrBeast" = 1)) +
+  labs(x = "Time Spent on YouTube (minutes)", y = "Regularity Score",
+       shape = "Favorite YouTuber") +
+  my_theme()
+```
+
+Just as there is not yet an observed relationship between time spent on YouTube and racial regularities, so too is there a lack of relationship between regularities scores and malleability scores in the present sample (`r report_regression(lm_mr)`). The preliminary relationship between racial regularity and malleability scores within the full sample may be found in @fig-full. Preliminary effects of daily YouTube usage and participant race may be found in @fig-faceted.
+
+```{r}
+#| label: fig-full
+#| fig-cap: "Correlation Between Racial Regularities Score and Malleability Score"
+#| fig-scap: "Full Sample"
+#| fig-note: "N = 18, only pilot data used."
+#| fig-align: "center"
+#| fig-width: 4
+#| fig-height: 3
 
 ggplot(youtube) +
   aes(x = regularity_score, y = malleable_score) +
-  geom_point(aes(color = daily)) +
-  stat_smooth(method = "lm") +
-  facet_wrap(~ race) +
-  scale_y_continuous(name = "Malleability Score") +
-  scale_x_continuous(name = "Regularities Score") +
+  stat_smooth(method = "lm", color = "#800000", linewidth = 0.8, fill = "lightgrey") +
+  geom_point() +
+  labs(x = "Regularities Score", y = "Malleability Score",
+       title = "A") +
   my_theme()
+```
+
+```{r}
+#| label: fig-faceted
+#| fig-cap: "Correlation Between Racial Regularities Score and Malleability Score"
+#| fig-scap: "Effects of daily use and participant race"
+#| fig-note: "Participant race coded as White/Non-White for pilot data only."
+#| fig-align: "center"
+#| fig-width: 4
+#| fig-height: 3
+
+ggplot(youtube) +
+  aes(x = regularity_score, y = malleable_score) +
+  stat_smooth(method = "lm", color = "black", linewidth = 0.8, fill = "lightgrey") +
+  geom_point(aes(color = race)) +
+  scale_color_manual(values = c("#155F83", "#C16622")) +
+  facet_wrap(~ daily) +
+  labs(x = "Regularities Score", y = "Malleability Score",
+       color = "Participant Race",
+       title = "B") +
+  theme(legend.position = "bottom") +
+   my_theme()
 
 ```
-# Discussion
+
+# Discussion {#sec-discussion}
+
+The present study examines the relationship between children's YouTube usage and potential effects on racial attitudes. No significant effects of YouTube usage on group beliefs have been observed thus far; we thus fail to reject the null hypothesis that there is no difference in racial beliefs between children who spend a lot of time on YouTube and those who do not. Similarly, as there is no significant relationship between time spent on YouTube and children's observation of racial regularities, nor between racial regularities and group malleability beliefs, there is no evidence thus far to suggest that observation of racial regularities affects outgroup prejudices as a result of YouTube usage. 
 
 \clearpage
 # References
