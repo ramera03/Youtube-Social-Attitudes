@@ -7,6 +7,8 @@ fake_data/
 
 # Additional clutter
 manuscript_files/*
+.DS_Store
+data/.DS_Store
 
 # Types of files not for GitHub
 *.heic
