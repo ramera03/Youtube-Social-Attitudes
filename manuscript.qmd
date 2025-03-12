@@ -48,14 +48,14 @@ editor: visual
 #| include: false
 
 # Necessary libraries
-library(svglite)
+#install.packages(papaja)
 library(papaja)
-library(knitr)
-library(broom)
 #install.packages(kableExtra)
 library(kableExtra)
-library(flextable)
+#install.packages(psych)
 library(psych)
+library(knitr)
+library(broom)
 library(tidyverse)
 
 # Setting global options
@@ -64,8 +64,8 @@ knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE)
 
-# Generate or overwrite r-reference files
-# papaja::r_refs(file = "r-references.bib")
+# Set seed
+set.seed(521)
 
 # read in data
 youtube <- read_csv("data/youtube.csv", col_names = TRUE)
@@ -75,6 +75,7 @@ youtube <- read_csv("data/youtube.csv", col_names = TRUE)
 ```{r}
 #| label: my-theme
 
+# Custom theme
 my_theme <- function(){
   theme(
     # Plot background color 
@@ -142,7 +143,7 @@ Pilot data has been collected in March of 2025 from families recruited via Qualt
 
 ## Measures {#sec-measures}
 
-In the parent survey, participants answer questions related to parent and child demographics (child age, race/ethnicity, parent income and level of education, etc), as well as questions regarding their child’s YouTube usage (for instance, time spent on YouTube, as reported by their child’s device screen time). 
+In the parent survey, participants answer questions related to parent and child demographics (child age, race/ethnicity, parent income and level of education, etc.), as well as questions regarding their child’s YouTube usage (for instance, time spent on YouTube, as reported by their child’s device screen time). 
 
 In the child survey, children answer questions related to their YouTube usage, such as time spent on YouTube and their favorite genre. Next, they will either answer more questions pertaining to YouTube content, or their general racial attitudes; either block of questions will appear randomly, so as to reduce the influence of question order. In the racial attitudes section, children will answer questions regarding outgroup prejudices, as rated on a Likert scale. They will also complete one friend choice item, as a simple exploratory measure of racial preference. In the YouTube content section, children will be asked to think of their favorite YouTuber as they answer questions related to whether they have a parasocial relationship with that YouTuber, as well as their observations of racial regularities on YouTube.
 
@@ -159,6 +160,7 @@ All measures used in adult studies have been specifically adapted for child read
 ```{r}
 #| label: report-reliability-function
 
+# Created with ChatGPT help
 # Function which returns Cronbach's alpha
 return_alpha <- function(data, cols) {
   # select data 
@@ -228,11 +230,8 @@ Looking first to the distributions of time spent on YouTube among  participants,
 ```{r}
 #| label: fig-time-distribution
 #| fig-cap: "Distribution of participants' YouTube watch time"
-#| fig-align: "center"
 #| fig-width: 6
 #| fig-height: 4 
-
-# Set figure output settings - renders really small
 
 ggplot(subset(youtube, !is.na(Ctime)), aes(x = Ctime)) + 
   geom_bar(color = "black", fill = "grey") +
@@ -282,7 +281,7 @@ aov_mall_outfreq <- aov(malleable_score ~ outgroup_freq, data = youtube)
 ```{r}
 #| label: anova-report-function
 
-# based on apaquarto manuscript example and chat help
+# based on apaquarto manuscript example and chatGPT help
 
 # Takes an aov model object as argument
 # Returns string of format "$F$(df1, df2) = F-value, $p$ = p-value"
@@ -329,7 +328,7 @@ lm_mr <- lm(malleable_score ~ regularity_score, data = youtube)
 # Taken from apaquarto demo 
 
 # report_regression takes a lm model object as an argument
-# Returns string of format: "$F$(df, df.residual) = F-value, $p$ = p-value, $R^2$ = r-squared"
+# Returns string of format: "$F$(df, df.residual) = F-value, $p$ = p-value"
 
 report_regression <- function(model) {
     
@@ -342,7 +341,7 @@ report_regression <- function(model) {
                    m_glance$df, 
                    ", ", m_glance$df.residual, 
                    ") = ", round(m_glance$statistic, 2), 
-                   ", $p$ = ", p_value)
+                   ", $p$ ", p_value)
   # Return report
   return(report)    
 }
@@ -353,13 +352,11 @@ Regressing malleability scores against parent reports of time spent on YouTube, 
 ```{r}
 #| label: fig-malleable
 #| fig-cap: "Correlations Between Time Spent On YouTube and Group Malleability Beliefs"
-#| fig-scap: "Effects of time, daily use, and favorite YouTuber"
-#| fig-note: "MrBeast is the modal favorite YouTuber. No other YouTuber has been listed with enough frequency to report."
-#| fig-align: "center"
 #| fig-width: 5
 #| fig-height: 2
 
 ggplot(data = youtube %>% 
+         # filtering outliers that are too low
              filter(Ptime > 10)) +
   aes(x = Ptime, y = malleable_score) +
   facet_grid(~ daily, scales = "free_x") +
@@ -367,20 +364,20 @@ ggplot(data = youtube %>%
   geom_point(aes(shape = youtuber)) +
   scale_shape_manual(values = c("Not MrBeast" = 16, "MrBeast" = 1)) +
   labs(x = "Time Spent on YouTube (minutes)", y = "Malleability Score",
-       shape = "Favorite YouTuber") +
+       shape = "Favorite YouTuber",
+       title = "Malleability and Time Spent on YouTube",
+       caption = "Note: MrBeast is the modal favorite YouTuber.") +
   my_theme()
 ```
 
 ```{r}
 #| label: fig-regularity
 #| fig-cap: "Correlations Between Time Spent On YouTube and Racial Regularities"
-#| fig-scap: "Effects of time, daily use, and favorite YouTuber"
-#| fig-note: "MrBeast is the modal favorite YouTuber. No other YouTuber has been listed with enough frequency to report."
-#| fig-align: "center"
 #| fig-width: 5
 #| fig-height: 2
 
 ggplot(data = youtube %>% 
+         # filtering outliers that are too low
              filter(Ptime > 10)) +
   aes(x = Ptime, y = regularity_score) +
   facet_grid(~ daily, scales = "free_x") +
@@ -388,39 +385,37 @@ ggplot(data = youtube %>%
   geom_point(aes(shape = youtuber)) +
   scale_shape_manual(values = c("Not MrBeast" = 16, "MrBeast" = 1)) +
   labs(x = "Time Spent on YouTube (minutes)", y = "Regularity Score",
-       shape = "Favorite YouTuber") +
+       shape = "Favorite YouTuber",
+       title = "Racial Regularities and Time Spent on YouTube",
+       caption = "Note: MrBeast is the modal favorite YouTuber.") +
   my_theme()
 ```
 
-Just as there is not yet an observed relationship between time spent on YouTube and racial regularities, so too is there a lack of relationship between regularities scores and malleability scores in the present sample (`r report_regression(lm_mr)`). The preliminary relationship between racial regularity and malleability scores within the full sample may be found in @fig-full. Preliminary effects of daily YouTube usage and participant race may be found in @fig-faceted.
+Just as there is not yet an observed relationship between time spent on YouTube and racial regularities, so too is there a lack of relationship between regularities scores and malleability scores in the present sample (`r report_regression(lm_mr)`). The preliminary relationship between racial regularity and malleability scores within the full sample, as well as preliminary effects of daily YouTube usage and participant race may be found in @fig-reg-v-mall.
 
 ```{r}
-#| label: fig-full
+#| label: fig-reg-v-mall
 #| fig-cap: "Correlation Between Racial Regularities Score and Malleability Score"
-#| fig-scap: "Full Sample"
-#| fig-note: "N = 18, only pilot data used."
-#| fig-align: "center"
-#| fig-width: 4
-#| fig-height: 3
+#| fig-subcap: ["Full Sample", "Effects of daily use and participant race"]
+#| layout-ncol: 2
+#| fig-height: 6
 
+# Arrange plots (chatgpt rendering assistance)
+par(mfrow = c(1, 2))  
+
+# Plot 1: Full sample
 ggplot(youtube) +
   aes(x = regularity_score, y = malleable_score) +
   stat_smooth(method = "lm", color = "#800000", linewidth = 0.8, fill = "lightgrey") +
   geom_point() +
   labs(x = "Regularities Score", y = "Malleability Score",
-       title = "A") +
+       title = "Malleability vs. Regularity Scores") +
+  theme(plot.title = element_text(size = 20), 
+            axis.text = element_text(size = 16),
+            axis.title = element_text(size = 18)) +
   my_theme()
-```
 
-```{r}
-#| label: fig-faceted
-#| fig-cap: "Correlation Between Racial Regularities Score and Malleability Score"
-#| fig-scap: "Effects of daily use and participant race"
-#| fig-note: "Participant race coded as White/Non-White for pilot data only."
-#| fig-align: "center"
-#| fig-width: 4
-#| fig-height: 3
-
+# Plot 2: Faceted plot
 ggplot(youtube) +
   aes(x = regularity_score, y = malleable_score) +
   stat_smooth(method = "lm", color = "black", linewidth = 0.8, fill = "lightgrey") +
@@ -429,15 +424,25 @@ ggplot(youtube) +
   facet_wrap(~ daily) +
   labs(x = "Regularities Score", y = "Malleability Score",
        color = "Participant Race",
-       title = "B") +
-  theme(legend.position = "bottom") +
-   my_theme()
-
+       title = "Malleability vs. Regularity Scores",
+       caption = "Note: Participant race coded as White/Non-White for pilot data only.") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size = 20), 
+        axis.text = element_text(size = 16),
+        axis.title = element_text(size = 18), 
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        plot.caption = element_text(size = 14)) +
+  my_theme()
 ```
 
 # Discussion {#sec-discussion}
 
-The present study examines the relationship between children's YouTube usage and potential effects on racial attitudes. No significant effects of YouTube usage on group beliefs have been observed thus far; we thus fail to reject the null hypothesis that there is no difference in racial beliefs between children who spend a lot of time on YouTube and those who do not. Similarly, as there is no significant relationship between time spent on YouTube and children's observation of racial regularities, nor between racial regularities and group malleability beliefs, there is no evidence thus far to suggest that observation of racial regularities affects outgroup prejudices as a result of YouTube usage. 
+The present study examines the relationship between children's YouTube usage and potential effects on racial attitudes. No significant effects of YouTube usage on group beliefs have been observed thus far; within the present study, we thus fail to reject the null hypothesis that there is no difference in racial beliefs between children who spend a lot of time on YouTube and those who do not. Similarly, as there is no significant relationship between time spent on YouTube and children's observation of racial regularities, nor between racial regularities and group malleability beliefs, there is no evidence thus far to suggest that observation of racial regularities affects outgroup prejudices as a result of YouTube usage. 
+
+Though no relationships have been observed thus far, the present sample is limited in size. There is still potential that relationships between YouTube usage, children's observations of racial regularities, and children's expression of group malleability beliefs may emerge in the full sample. Further, there is possibility that with the full sample, there is greater evidence for the effect of parasociality. Should the full sample yield such results, this would suggest that YouTube is indeed a site of racial socialization for children. As it is still currently unknown whether racial regularities are transmitted via social media platforms in a manner that leads to negative attitudes, and this study will be a first step toward understanding such an impact. Additionally, if in the full sample if there are significant differences in racial stereotyping and prejudice based on a favorite YouTuber, this would indicate YouTubers as potential points of intervention in a child’s development of racial attitudes and behaviors. 
+
+Considering the dearth of research on how social media platforms affect children’s racial attitudes and behaviors, this study will provide insights into the extent to which various aspects of social media usage contribute to racial socialization. With the future, full sample, findings may still lead to novel discoveries and interventions in the development of negative racial attitudes and behavior.
 
 \clearpage
 # References
