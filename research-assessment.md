@@ -149,7 +149,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Uses multiple operators in data transformation pipelines and/or inline R code
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         For logical operators, see preparation.R lines 24-25. For comparison, see preparation.R lines 208-214, as well as fig-malleable and fig-regularity in .qmd. For arithmetic, see lines 220-244, as well as in line elements in .qmd.
 
@@ -160,8 +160,8 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Functions are well-documented with comments
 
         -   [x] Objective attempt
-        -   [ ] Objective met
-        -   Grader comments:
+        -   [x] Objective met
+        -   Grader comments: These are great! I'm glad chatgpt ended up being useful for this, if not for other things...
 
 8.  Parse and write conditional statements and/or loops
 
@@ -169,7 +169,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Uses multiple types of conditional/loop functions (e.g., `if_else()`, `case_when()`, `for`, `while`)
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         See chunk labeled reliability-dataframe for one instance of case_when. See preparation.R lines 162-214 for another instance of case_when, and an if_else. See preparation.R lines 111-125 for ifelse. 
         
@@ -201,7 +201,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. Uses `stringr` functions in a data transformation pipeline
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments: see preparation.R lines 68-70, line 103.
 
 12. Use `forcats` functions to work with factor variables
@@ -222,15 +222,15 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     2. At least one plot is multi-variable
 
         -   [x] Objective attempt
-        -   [ ] Objective met
-        -   Grader comments:
+        -   [x] Objective met
+        -   Grader comments: 
 
 14. Use dynamic aesthetics to group data
 
     1. Uses at least 2 unique data-mapped `aes()` arguments (e.g., color, shape, size) to group data in a plot in one or multiple plots
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         
 15. Use facets to create parallel plots
@@ -242,7 +242,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
       1. If data only includes 1 sensible grouping variable, it may be used for both the faceting and groupin aes.  
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         
 16. Create publication-quality plots using `theme` and `labs` layers
@@ -253,8 +253,8 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. Uses at least 1 static aesthetic (e.g., color, shape, size) that improves visual clarity without mapping to data
 
         -   [x] Objective attempt
-        -   [ ] Objective met
-        -   Grader comments:
+        -   [x] Objective met
+        -   Grader comments: There are awesome! I love the custom theme. I guess I shouldn't be surprised given that you're also taking a data visualization class. :)
 
 ### Data analysis
 
@@ -266,7 +266,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     - NOTE: This objective may be met with only numeric or non-numeric summaries if they are sufficiently complex (at Dr. Dowling's discretion)
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 18. Perform simple hypothesis testing analyses for multiple data types
@@ -277,7 +277,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     - NOTE: This objective may be met with only numeric or factor data analyses if they are sufficiently complex (at Dr. Dowling's discretion)
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 19. Present and interpret statistics in manuscript narrative
@@ -312,7 +312,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     5. May include references not cited in-text
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments: 
         2 very small changes needed:
             1.  add a \clearpage line above # References
@@ -339,7 +339,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. Organizes setup chunks sensibly
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         
 24. Render publication-quality tables, figures, and images from code chunks
@@ -352,9 +352,10 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     - NOTE: Ideally your table(s) should be produced in APA7 style, but this is not a strict requirement. At a minimum, they should render as formatted tables (not raw output), have readable and correctly formatted text (e.g., column headers should be capitalized and in plain english, not literal variable names), and the table must be dynamically referenced in the text.
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
         Due to The Apaquarto Table Bug, I have two table 1s. 
+            - Actually...you don't? When I knit it I see tables 1 and 2, like you'd expect. The plot thickens. Somebody get W.Joel on the phone.
 
 25. Execute descriptive and inferential analyses in code chunks
 
@@ -365,7 +366,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     5. Chunks are organized sensibly and appear near the text they support
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 ### R Markdown and Quarto
@@ -387,7 +388,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     - NOTE: This is going to be one of the most flexible objectives to demonstrate.  You need to demonstrate a range of markdown skills and use them to make a readable, informative manuscript. Hitting the four points above should do that, but you can use your judgment about what kind of markdown features will best serve your project. No matter what, you should use markdown to follow APA7 guidelines.
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 28. Use inline R variables to replace static text
@@ -397,15 +398,15 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     3. Ideally, uses inline R references for *all* data-dependent text
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:
 
 29. Run inline R functions to render dynamic data-dependent text
 
     1. Uses inline R functions to render at least 3 unique data-dependent text outputs (e.g., performs rounding, calculates means, subtracts one list length from another, etc. -- inline rather than in a code chunk)
 
-        -   [ ] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective attempt
+        -   [x] Objective met
         -   Grader comments:
         
 30. Use `knitr` and quarto to produce an APA7 formatted 1-click PDF manuscript
@@ -416,7 +417,7 @@ Refer to the website for general tips on meeting these objectives and an FAQ.
     4. No additional steps are needed (e.g., finding data, determining necessary packages to install and load, running unsourced scripts, correcting aboslute paths)
 
         -   [x] Objective attempt
-        -   [ ] Objective met
+        -   [x] Objective met
         -   Grader comments:        
    
 
@@ -450,8 +451,10 @@ I also attempted to make my manuscript as dynamic as possible, placing data depe
 
 All final projects are graded by Dr. Dowling. You will see your grade on Canvas separated into two categories: objective points and engagement points.
 
--   **Objective points:** 11/30
--   **Engagement points:** 7/10
--   **Total points:** 18/40
+-   **Objective points:** 30/30
+-   **Engagement points:** 10/10
+-   **Total points:** 40/40
 
 **Comments:** Reilly, this is looking great! It's super valid that there's an element of shoehorning things in to meet all the objectives that can be frustrating, but just keep being creative about it. It's just an excuse to practice what you've learned (but again...totally valid to be annoyed by it). Looking forward to your final draft! Also, it would be very very cool if you could turn this into a website, but keep in mind that this is already a challenging undertaking. You're going to keep working on this beyond this class, so it would be totally reasonable to set that as a goal to pursue *after* D2MR. 
+
+Final draft: Fantastic! Really well done, Reilly. I love seeing how far this has come, and I'm looking forward to see where it goes next quarter!
