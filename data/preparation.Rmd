@@ -1,0 +1,181 @@
+---
+title: "preparation"
+author: "Reilly Amera"
+date: "2025-03-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup}
+library(tidyverse)
+
+# Read in data
+child <- read_csv("child.csv", col_names = TRUE)
+parent <- read_csv("parent.csv", col_names = TRUE)
+```
+
+```{r cleaning}
+# Remove rows that do not contain survey data
+parent <- parent[-c(1, 2),]
+child <- child[-c(1, 2),]
+```
+
+```{r parent cleaning}
+# Parent cleaning
+parent <- parent %>% 
+  # self consent = agree
+  filter(Pconsent_self == "Agree") %>% 
+  # child consent = agree
+  filter(`Pconsent-child` == "Agree") %>% 
+  # remove duplicates
+  mutate(Q_RelevantIDDuplicate = 
+           # Logical operators
+           ifelse(is.na(Q_RelevantIDDuplicate), FALSE, TRUE)) %>% 
+  filter(Q_RelevantIDDuplicate != TRUE) %>% 
+  # filter attn checks
+  filter(yt_opinions_4 == "A lot") %>% 
+  # get rid of unnecessary columns
+  select(-c(StartDate:Q_RelevantIDLastStartDate))
+```
+
+```{r parent wrangling}
+# Parent reported child age
+parent <- parent %>% 
+  # Create one birthday column
+  unite(bday, `bday#1_1`, `bday#2_1`, sep = " ", remove = FALSE) %>% 
+  unite(bday, bday, `bday#3_1`, sep = ", ", remove = FALSE) %>% 
+  # Parse birthdays as dates
+  mutate(bday = mdy(bday)) %>% 
+  # Age column
+  mutate(P_age = time_length(interval(bday, Sys.Date()), "years") %>% floor())
+```
+
+```{r child cleaning}
+child <- child %>% 
+  # remove survey testing responses 
+  filter(!is.na(transaction_id)) %>% 
+  # consent = agree
+  filter(Cconsent == "YES") %>% 
+  # get rid of unnecessary columns
+  select(-c(StartDate:UserLanguage)) %>% 
+  # gc = 1 - embedded data; good/complete responses
+  filter(gc == 1)
+```
+
+```{r merge}
+# Merging data
+youtube <- inner_join(parent, child, by = join_by(transaction_id))
+```
+
+```{r age wrangling}
+youtube <- youtube %>% 
+  # Do child ages match parent ages?
+  mutate(age_match = ifelse(
+    P_age == age,
+    TRUE,
+    FALSE
+  ))
+
+# age discrepancies
+false_age <- youtube %>% 
+  select(age_match, bday, P_age, age, transaction_id) %>% 
+  filter(age_match == FALSE) %>% 
+  mutate(age = as.numeric(age)) %>% 
+  mutate(difference = abs(P_age - age)) %>% 
+  mutate(large_diff = ifelse(
+    difference > 1,
+    TRUE,
+    FALSE
+  )) %>% 
+  filter(large_diff == TRUE) %>% 
+  select(transaction_id)
+
+# write_csv(false_age, "transaction_ids.csv")
+```
+
+```{r youtube wrangling}
+# Time Scores
+```
+
+```{r youtube composites}
+### Recoding factor variables as numeric variables to create aggregate scores
+youtube <- youtube %>% 
+  mutate(
+    across(c(`homophily_appear_1`, `homophily_appear_2`, `homophily_appear_3`, `homophily_appear_4`, `homophily_appear_5`, `homophily_behave_1`, `homophily_behave_2`, `homophily_behave_3`, `homophily_behave_4`, `homophily_behave_6`, parasocial_1, parasocial_2, parasocial_3, parasocial_4, parasocial_5),
+           ~ recode (.,
+                     "Really disagree" = 1,
+                     "Disagree" = 2,
+                     "I don't know" = 3,
+                     "Agree" = 4,
+                     "Really agree" = 5
+           ))) %>% 
+  mutate(
+    across(c(malleable_1, malleable_2, malleable_3, malleable_4),
+           ~ recode(.,
+                    "Really disagree" = 1,
+                    "Disagree" = 2,
+                    "Neither agree nor disagree" = 3,
+                    "Agree" = 4,
+                    "Really agree" = 5
+           ))) %>%  
+  mutate(
+    across(c(regularities_1, regularities_2, regularities_3, regularities_4, regularities_5, regularities_6, regularities_7),
+           ~ recode(.,
+                    "Really disagree" = 1,
+                    "Disagree" = 2,
+                    "Neither agree nor disagree" = 3,
+                    "Agree" = 4,
+                    "Really agree" = 5
+           ))) %>%  
+  select(-c(homophily_behave_5))
+
+### Composite scores
+# Racial attitudes score -- total possible score = 20
+youtube <- youtube %>% 
+  mutate(malleable_score = rowSums(across(malleable_1:malleable_4))) %>% 
+  mutate(malleable_score = malleable_score/20)
+
+# Parasocial relationship scores (each block separately, then aggregate)
+youtube <- youtube %>% 
+  # homophily-appear -- total possible score = 20
+  mutate(h_appear_score = rowSums(across(homophily_appear_1:homophily_appear_5))) %>% 
+  # homophily-behave -- total possible score = 20
+  mutate(h_behave_score = rowSums(across(homophily_behave_1:homophily_behave_6))) %>% 
+  # parasocial -- total possible score = 20
+  mutate(parasocial_score = rowSums(across(parasocial_1:parasocial_5))) %>% 
+  #Composite scores
+  mutate(composite = rowSums(across(h_appear_score:parasocial_score))) %>% 
+  # Proportion scores
+  mutate(h_appear_score = h_appear_score/20) %>%
+  mutate(h_behave_score = h_behave_score/20) %>%
+  mutate(parasocial_score = parasocial_score/20) %>%
+  mutate(composite = composite/60)
+
+# Racial regularities score (behavior) -- total possible score = 35
+youtube <- youtube %>% 
+  # Reverse coded items
+  mutate(across(c(regularities_3, regularities_5, regularities_7), ~ 6 - .)) %>% 
+  # Score
+  mutate(regularity_score = rowSums(across(regularities_1:regularities_7))) %>% 
+  mutate(regularity_score = regularity_score/35)
+```
+
+```{r}
+# H1: time spent on YouTube and children’s observation of racial regularities covary
+```
+
+```{r}
+# H2: if children spend more time on YouTube, they will display greater racial stereotyping and prejudice against outgroups
+```
+
+```{r}
+# H3: the relationship between children’s time spent on YouTube and their exhibited racial stereotyping and prejudice will be mediated by their observations of negative racial regularities
+```
+
+```{r}
+# H4: the relationship between the amount of time that children spend on YouTube and their racial stereotyping and prejudice will be moderated by whether they have a parasocial relationship with a favorite YouTuber of a race other than their own
+```
+

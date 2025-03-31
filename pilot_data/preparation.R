@@ -1,8 +1,8 @@
 library(tidyverse)
 
 # Read in data
-child <- read_csv("data/child.csv", col_names = TRUE)
-parent <- read_csv("data/parent.csv", col_names = TRUE)
+child <- read_csv("pilot_data/child.csv", col_names = TRUE)
+parent <- read_csv("pilot_data/parent.csv", col_names = TRUE)
 
 ########### Data Cleaning ###########
 
