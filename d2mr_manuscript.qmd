@@ -14,7 +14,7 @@ author:
     region: IL
     country: USA
     postal-code: 60637
-abstract: "One way in which children learn about group dynamics within their racial world is from patterns in their daily environments. The current study seeks to understand the degree to which YouTube, a popular form of social media, exposes children to negatively valenced racial patterns, and potentially affects their beliefs. Dyads of parents and 8-13 year-old children (N = 18) describe daily YouTube usage, and the effects of children's YouTube usage are assessed. In the present sample, there is no relationship between children's YouTube usage, racial patterns they may observe, and negative racial beliefs."
+abstract: "One way in which children learn about group dynamics within their racial world is from patterns in their daily environments. The current study seeks to understand the degree to which YouTube, a popular form of social media, exposes children to negatively valenced racial patterns, and potentially affects their beliefs. Dyads of parents and 8-13 year-old children (N = 200 dyads) describe daily YouTube usage, and the effects of children's YouTube usage are assessed. In the present sample, there is no relationship between children's YouTube usage, racial patterns they may observe, and negative racial beliefs."
 floatsintext: true
 numbered-lines: false
 bibliography: [r-references.bib, bibliography.bib]
@@ -398,7 +398,7 @@ Just as there is not yet an observed relationship between time spent on YouTube 
 #| fig-cap: "Correlation Between Racial Regularities Score and Malleability Score"
 #| fig-subcap: ["Full Sample", "Effects of daily use and participant race"]
 #| layout-ncol: 2
-#| fig-height: 6
+#| dfig-height: 6
 
 # Arrange plots (chatgpt rendering assistance)
 par(mfrow = c(1, 2))  
