@@ -10,11 +10,25 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r setup}
+library(psych)
+library(knitr)
+library(broom)
+library(papaja)
+library(mediation)
 library(tidyverse)
+
 
 # Read in data
 child <- read_csv("child.csv", col_names = TRUE)
 parent <- read_csv("parent.csv", col_names = TRUE)
+child_old <- read_csv("child_old.csv", col_names = TRUE)
+parent_old <- read_csv("parent_old.csv", col_names = TRUE)
+```
+
+```{r label}
+# Marking new data with "1"
+child$new_sample <- ifelse(child$transaction_id %in% child_old$transaction_id, 0, 1)
+parent$new_sample <- ifelse(parent$transaction_id %in% parent_old$transaction_id, 0, 1)
 ```
 
 ```{r cleaning}
@@ -80,24 +94,105 @@ youtube <- youtube %>%
   ))
 
 # age discrepancies
-false_age <- youtube %>% 
-  select(age_match, bday, P_age, age, transaction_id) %>% 
-  filter(age_match == FALSE) %>% 
+youtube <- youtube %>% 
+  # age as numeric
   mutate(age = as.numeric(age)) %>% 
+  # add column measuring difference in responses
   mutate(difference = abs(P_age - age)) %>% 
   mutate(large_diff = ifelse(
     difference > 1,
     TRUE,
     FALSE
-  )) %>% 
-  filter(large_diff == TRUE) %>% 
-  select(transaction_id)
+  ))
 
-# write_csv(false_age, "transaction_ids.csv")
+sum(youtube$large_diff)
+
+summary(youtube$age)
+  
 ```
 
 ```{r youtube wrangling}
 # Time Scores
+
+# Parent time report
+youtube <- youtube %>% 
+  mutate(Pdays = ifelse(Pdays == "None", 0, Pdays)) %>% 
+  mutate(Pdays = str_sub(Pdays, start = 1, end = 1)) %>%
+  mutate(Ptime = as.character(Ptime)) %>% 
+  mutate(Ptime = dplyr::recode(Ptime,
+                        "0 minutes" = 0,
+                        "15 minutes or less" = 1,
+                        "30 minutes or less" = 2,
+                        "45 minutes or less" = 3,
+                        "1 hour or less" = 4,
+                        "1.5 hours or less" = 5,
+                        "2 hours or less" = 6,
+                        "More than 2 hours" = 7,
+                        # Only 1 instance of other; participant listed 2 (presumably 2 hours)
+                        "Other" = 6
+                        )) %>% 
+  mutate(Pdays = as.numeric(Pdays)) %>%
+  mutate(Ptime = as.numeric(Ptime)) %>%
+  mutate(Ptime_score = Pdays * Ptime)
+
+# Survey logic was "If 1 AND 2 were selected, show next block" - about 9 responses
+# Just using parent data
+```
+
+```{r time binned}
+youtube <- youtube %>% 
+  mutate(Ptime_max = case_when(
+                        Ptime == "0" ~ 0,
+                        Ptime == "1" ~ 0.25,
+                        Ptime == "2" ~ 0.5,
+                        Ptime == "3" ~ 0.75,
+                        Ptime == "4" ~ 1,
+                        Ptime == "5" ~ 1.5,
+                        Ptime == "6" ~ 2,
+                        Ptime == "7" ~ 3,
+                        TRUE ~ NA_real_
+                        )) %>% 
+  mutate(Ptime_max = as.numeric(Ptime_max)) %>%
+  mutate(Ptime_max_score = Pdays * Ptime_max)
+```
+
+```{r time correlation}
+# Degree to which parent and child reports of time are correlated
+
+# Youtube correlation with all responses, parent replacing 10 -- 0.9319548
+# Correlating parent and child data for responses of 3-7 days -- 0.9168719
+x <- youtube %>%
+  mutate(days = str_sub(days, start = 1, end = 1)) %>%
+  filter(!(days %in% c(1, 2))) %>% 
+cor(youtube$Pdays, youtube$days, method = "pearson")
+
+# see correlation in Ctime - 0.732496
+test <- youtube %>%
+  filter(!(days %in% c(1, 2, "N"))) %>% 
+  mutate(Ctime = case_when(
+    Ctime == "0 minutes" ~  0,
+    Ctime == "15 minutes or less" ~ 1,
+    Ctime == "30 minutes or less" ~ 2,
+    Ctime == "45 minutes or less" ~ 3,
+    Ctime == "1 hour or less" ~ 4,
+    Ctime == "1.5 hours or less" ~ 5,
+    Ctime == "2 hours or less" ~ 6,
+    Ctime == "More than 2 hours" ~ 7,
+    TRUE ~ NA_real_)) %>% 
+  mutate(Ctime = as.numeric(Ctime)) %>% 
+  mutate(time_match = ifelse(Ctime == Ptime,
+                             1, 0)) %>% 
+  select(Ptime, Pdays, Ctime, days, time_match) %>%
+  mutate(diff = abs(Ptime - Ctime)) %>% 
+  mutate(large_diff = ifelse(diff > 2,
+    TRUE,
+    FALSE))
+sum(test$large_diff)
+cor(test$Ptime, test$Ctime, method = "pearson")
+# Use parent values as primary predictor; report correlation for responses
+
+# Consider how to report time scores in writing 
+summary(youtube$Ptime)
 ```
 
 ```{r youtube composites}
@@ -105,7 +200,7 @@ false_age <- youtube %>%
 youtube <- youtube %>% 
   mutate(
     across(c(`homophily_appear_1`, `homophily_appear_2`, `homophily_appear_3`, `homophily_appear_4`, `homophily_appear_5`, `homophily_behave_1`, `homophily_behave_2`, `homophily_behave_3`, `homophily_behave_4`, `homophily_behave_6`, parasocial_1, parasocial_2, parasocial_3, parasocial_4, parasocial_5),
-           ~ recode (.,
+           ~ dplyr::recode (.,
                      "Really disagree" = 1,
                      "Disagree" = 2,
                      "I don't know" = 3,
@@ -114,7 +209,7 @@ youtube <- youtube %>%
            ))) %>% 
   mutate(
     across(c(malleable_1, malleable_2, malleable_3, malleable_4),
-           ~ recode(.,
+           ~ dplyr::recode(.,
                     "Really disagree" = 1,
                     "Disagree" = 2,
                     "Neither agree nor disagree" = 3,
@@ -123,7 +218,7 @@ youtube <- youtube %>%
            ))) %>%  
   mutate(
     across(c(regularities_1, regularities_2, regularities_3, regularities_4, regularities_5, regularities_6, regularities_7),
-           ~ recode(.,
+           ~ dplyr::recode(.,
                     "Really disagree" = 1,
                     "Disagree" = 2,
                     "Neither agree nor disagree" = 3,
@@ -140,19 +235,19 @@ youtube <- youtube %>%
 
 # Parasocial relationship scores (each block separately, then aggregate)
 youtube <- youtube %>% 
-  # homophily-appear -- total possible score = 20
+  # homophily-appear -- total possible score = 25
   mutate(h_appear_score = rowSums(across(homophily_appear_1:homophily_appear_5))) %>% 
-  # homophily-behave -- total possible score = 20
+  # homophily-behave -- total possible score = 25
   mutate(h_behave_score = rowSums(across(homophily_behave_1:homophily_behave_6))) %>% 
-  # parasocial -- total possible score = 20
+  # parasocial -- total possible score = 25
   mutate(parasocial_score = rowSums(across(parasocial_1:parasocial_5))) %>% 
   #Composite scores
   mutate(composite = rowSums(across(h_appear_score:parasocial_score))) %>% 
   # Proportion scores
-  mutate(h_appear_score = h_appear_score/20) %>%
-  mutate(h_behave_score = h_behave_score/20) %>%
-  mutate(parasocial_score = parasocial_score/20) %>%
-  mutate(composite = composite/60)
+  mutate(h_appear_score = h_appear_score/25) %>%
+  mutate(h_behave_score = h_behave_score/25) %>%
+  mutate(parasocial_score = parasocial_score/25) %>%
+  mutate(composite = composite/75)
 
 # Racial regularities score (behavior) -- total possible score = 35
 youtube <- youtube %>% 
@@ -161,21 +256,712 @@ youtube <- youtube %>%
   # Score
   mutate(regularity_score = rowSums(across(regularities_1:regularities_7))) %>% 
   mutate(regularity_score = regularity_score/35)
+
+# presenting raw data can contextualize the data - make sure to say that 1.0 is highly fixed, eg, and 0.5 is neutral
 ```
+
+```{r friend cleaning}
+# Friend Choice cleaning
+
+# Splitting multiple races
+youtube <- youtube %>%
+  separate(race_ethnicity, into = c("race_1", "race_2", "race_3"), sep = ",\\s*") 
+
+# Recoding kid race and gender based on method design
+youtube <- youtube %>% 
+  # Trim "kid"
+  mutate(friend = str_extract(friend, "\\d+")) %>%  
+  # Add gender
+  mutate(friend_gender = case_when(
+    friend %in% c(1, 3, 5, 7, 9)  ~ "Male",
+    friend %in% c(2, 4, 6, 8, 10) ~ "Female",
+    TRUE ~ as.character(friend)
+    )) %>% 
+  # Recode based on race
+  mutate(friend_race = case_when(
+    friend %in% c(1, 4)  ~ "Black or African American",
+    friend %in% c(2, 9)  ~ "White",
+    friend %in% c(3, 6)  ~ "Hispanic or Latino/a",
+    friend %in% c(5, 8)  ~ "South Asian",
+    friend %in% c(7, 10)  ~ "Asian",
+    TRUE ~ as.character(friend)
+    ))
+
+# Matches
+# Race match = 1, race does not match = 2, race not represented = 3
+youtube <- youtube %>% 
+  mutate(race_match = case_when(
+    race_1 %in% c("American Indian or Alaska Native", "Middle Eastern or North African", "Native Hawaiian or Other Pacific Islander", "Some Other Race", "Multiracial") ~ 2,
+    friend_race == race_1 ~ 1, 
+    friend_race != race_1 ~ 0,
+    TRUE ~ NA_real_
+  )) %>% 
+  mutate(race_match_binary = ifelse(race_match == 1, 1, 0)) %>% 
+  relocate(race_1, .after = friend_race) %>% 
+  # gender match
+  mutate(gender_match = ifelse(
+    friend_gender == gender,
+    1, 0
+  ))
+```
+
+```{r}
+write_csv(youtube, "youtube.csv")
+```
+
+```{r}
+# YouTuber cleaning
+
+favorite <- youtube %>% 
+  dplyr::select(favorite, transaction_id)
+
+write_csv(favorite, "favorite.csv")
+```
+
+```{r demographic descriptives }
+# Descriptive statistics - demographics
+
+# Age
+ggplot(data = youtube) +
+  aes(x = age) + 
+  geom_bar(color = "black", fill = "grey")
+
+# Race
+ggplot(data = youtube) +
+  aes(x = race_1) + 
+  geom_bar(color = "black", fill = "grey")
+
+# Gender
+ggplot(data = youtube) +
+  aes(x = gender) + 
+  geom_bar(color = "black", fill = "grey")
+```
+
+```{r time descriptives}
+# Descriptive statistics - time
+
+# Histogram of parent reported time spent on YouTube
+ggplot(data = youtube) +
+  aes(x = Pdays) + 
+  geom_bar(color = "black", fill = "grey")
+
+# Histogram of parent reported days per week spent on YouTube
+ggplot(data = youtube) +
+  aes(x = Ptime) + 
+  geom_bar(color = "black", fill = "grey")
+
+# Histogram of parent time score spent on YouTube
+ggplot(data = youtube) +
+  aes(x = Ptime_score) + 
+  geom_bar(color = "black", fill = "grey")
+
+# Histogram of parent time score spent on YouTube - minutes as opposed to scores
+ggplot(data = youtube) +
+  aes(x = Ptime_max_score) + 
+  geom_bar(color = "black", fill = "grey")
+
+ggplot(data = youtube) +
+  aes(x = Ptime_score) +
+  geom_boxplot()
+summary(youtube$Ptime_score)
+
+ggplot(data = youtube) +
+  aes(x = race_1) +
+  geom_bar()
+
+```
+
+```{r regularity descriptive}
+# Regularities
+ggplot(data = youtube) +
+  aes(x = regularity_score) + 
+  geom_bar(color = "black", fill = "grey")
+
+ggplot(data = youtube) +
+  aes(x = regularity_score) + 
+  geom_boxplot(color = "black", fill = "grey")
+
+summary(youtube$regularity_score)
+
+sd(youtube$regularity_score)
+# t.test
+
+# Negative outgroup prejudice overall 
+# run t test for just white kids alone? 
+
+t.test(youtube$regularity_score, mu = 0.5)
+```
+
+```{r}
+# variance relative to t test
+individual_means <- rowMeans(youtube[, paste0("regularities_", 1:7)], na.rm = TRUE)
+
+# Center scores around the target mean
+centered <- individual_means - 2.572143
+
+# Variance
+variance <- mean(centered^2)
+
+# Standard deviation
+std_dev <- sqrt(variance)
+
+variance
+std_dev
+```
+
+
+```{r}
+# Alpha
+
+# Created with ChatGPT help
+# Function which returns Cronbach's alpha
+return_alpha <- function(data, cols) {
+  # select data 
+  selected_data <- data %>% select(all_of(cols))
+  # compute alpha
+  alpha_result <- psych::alpha(selected_data, check.keys = TRUE)
+  # Extract and return the raw alpha value
+  return(alpha_result$total$raw_alpha)
+}
+
+# Creating a list of all measures, grouped by questionnaire
+measures <-
+  list(
+  "Group Malleability" = c("malleable_1", "malleable_2", "malleable_3", "malleable_4"),
+  "Homophily (Appearance)" = c("homophily_appear_1", "homophily_appear_2", "homophily_appear_3", "homophily_appear_4", "homophily_appear_5"),
+  "Homophily (Appearance)" = c("homophily_behave_1", "homophily_behave_2", "homophily_behave_3", "homophily_behave_4", "homophily_behave_6"),
+  "Parasociality" = c("parasocial_1", "parasocial_2", "parasocial_3", "parasocial_4", "parasocial_5"),
+  "Racial Regularities" = c("regularities_1", "regularities_2", "regularities_3", "regularities_4", "regularities_5")
+)
+
+# Creating data frame with measures and corresponding alpha
+reliability <- data.frame(
+  Measure = names(measures),
+  Alpha = sapply(measures, function(cols) return_alpha(youtube, cols))
+)
+
+# Adding column with evaluations of alpha
+reliability <- reliability %>%
+  mutate(Alpha = round(Alpha, digits = 2)) %>% 
+  mutate(
+    Evaluation = case_when(
+      Alpha >= 0.95 ~ "Excellent",
+      Alpha >= 0.9 ~ "Great",
+      Alpha >= 0.8 ~ "Good",
+      Alpha >= 0.7 ~ "Acceptable",
+      Alpha >= 0.6 ~ "Questionable",
+      Alpha < 0.6 ~ "Poor"
+    )
+  )
+
+# Generate table
+kable(reliability, 
+      align = c("c", "c", "c"),
+      # Setting caption here
+      caption = "Reliability (assessed through Cronbach's Alpha) of questionnaires used, within sample") %>% 
+  kable_styling(position = "center", latex_options = c("striped"))
+```
+
+
+```{r}
+# report regression function
+report_regression <- function(model) {
+    
+  # Extract coefficients and p-values
+  m_glance <- glance(model)
+  # Format the p-value
+  p_value <- apa_p(m_glance$p.value, add_equals = TRUE)
+  # Create a string with the results
+  report <- paste0("$F$(", 
+                   m_glance$df, 
+                   ", ", m_glance$df.residual, 
+                   ") = ", round(m_glance$statistic, 2), 
+                   ", $p$ ", p_value,
+                   ", $R^2$ = ", round(m_glance$r.squared, 2))
+  # Return report
+  return(report)    
+}
+```
+
+```{r}
+# report regression coefficients function
+report_coefficients <- function(model){
+  m_tidy <- tidy(model) %>%
+    filter(term != "(Intercept)") %>%
+    mutate(
+      report = paste0(
+        "$B$ = ", round(estimate, 2),
+        ", $SE$ = ", round(std.error, 2),
+        ", $p$ ", apa_p(p.value, add_equals = TRUE)
+      ))
+  
+  return(m_tidy$report)
+}
+```
+
 
 ```{r}
 # H1: time spent on YouTube and children’s observation of racial regularities covary
+
+# Add age and gender
+
+# Use ptime as primary predictors 
+
+lm_h1 <- lm(regularity_score ~ Ptime_max_score + age + gender + race_1, data = youtube)
+summary(lm_h1)
+
+report_regression(lm_h1)
+report_coefficients(lm_h1)
+
+# testing things 
+t.test(regularity_score ~ gender, data = youtube)
+# Male participants only
+t_male <- t.test(youtube$regularity_score[youtube$gender == "Male"], mu = 0.5)
+# Female participants only
+t_female <- t.test(youtube$regularity_score[youtube$gender == "Female"], mu = 0.5)
+t_male
+t_female
+# male scores are significantly different from a neutral score but females are not 
+
+ # add age as covariate
+
+ggplot(data = youtube) +
+  aes(x = Ptime_max_score, y = regularity_score) +
+  geom_point() +
+  stat_smooth(method = "lm")
+
+# why is this data so flat?
+# gender, race, state
 ```
 
 ```{r}
-# H2: if children spend more time on YouTube, they will display greater racial stereotyping and prejudice against outgroups
+# H2: if children spend more time on YouTube, they will display greater racial stereotyping against outgroups
+# Make sure that measure is strongly connected to construct in writing 
+
+lm_h2 <- lm(malleable_score ~ Ptime_max_score, data = youtube)
+summary(lm_h2)
+report_regression(lm_h2)
+report_coefficients(lm_h2)
+```
+
+
+```{r}
+#ns time*gender interaction
+declan_model <- lm(malleable_score ~ Ptime_max_score*gender, data = youtube)
+drop1(declan_model, test = "Chisq")
+#ns time*age interaction
+declan_model2 <- lm(malleable_score ~ Ptime_max_score*age, data = youtube)
+drop1(declan_model2, test = "Chisq")
+#sig predict of gender
+declan_model3 <- glm(malleable_score ~ gender, data = youtube)
+drop1(declan_model3, test = "Chisq")
+
+ggplot(data = youtube) +
+  aes(x = Ptime_score, y = malleable_score) +
+  geom_point() +
+  stat_smooth(method = "loess")
+
+
+t.test(malleable_score ~ gender, data = youtube)
+t.test(regularity_score ~ gender, data = youtube)
+```
+
+```{r}
+# Genre anovas 
+aov1 <- aov(malleable_score ~ genre, data = youtube)
+summary(aov1)
+
+aov2 <- aov(regularity_score ~ genre, data = youtube)
+summary(aov2)
+
+ggplot(data = youtube) +
+  aes(x = genre) + 
+  geom_bar(color = "black", fill = "grey")
+
 ```
 
 ```{r}
 # H3: the relationship between children’s time spent on YouTube and their exhibited racial stereotyping and prejudice will be mediated by their observations of negative racial regularities
+
+# Add age and gender
+
+lm_h3 <- lm(malleable_score ~ regularity_score, data = youtube)
+summary(lm_h3)
+
+# Mediation model
+# Mediator model (regularity ~ time)
+model.M <- lm(regularity_score ~ Ptime_max_score, data = youtube)
+# Outcome model (malleable ~ time + regularity)
+model.Y <- lm(malleable_score ~ Ptime_max_score + regularity_score, data = youtube)
+med.out <- mediate(model.M, model.Y, treat = "Ptime_max_score", mediator = "regularity_score", boot = TRUE, sims = 1000)
+summary(med.out)
+
+ggplot(data = youtube) +
+  aes(x = regularity_score, y = malleable_score) +
+  geom_point() +
+  stat_smooth(method = "lm")
 ```
 
 ```{r}
 # H4: the relationship between the amount of time that children spend on YouTube and their racial stereotyping and prejudice will be moderated by whether they have a parasocial relationship with a favorite YouTuber of a race other than their own
+
+# If you have a strong relationship with a white youtuber compared to Other - how does this drive racial - most kids put white youtubers as their favorite youtuber, so wanted to see how parasocials with white youtubers are driving the effect 
+
+# Add age and gender
+
+lm_h4 <- lm(malleable_score ~ composite, data = youtube)
+summary(lm_h4)
+
+# plotting composite
+ggplot(data = youtube) +
+  aes(x = composite, y = malleable_score) +
+  geom_point() +
+  stat_smooth(method = "lm")
+# plotting each component individually
+ggplot(data = youtube) +
+  aes(x = h_appear_score, y = malleable_score) +
+  geom_point() +
+  stat_smooth(method = "lm")
+ggplot(data = youtube) +
+  aes(x = h_behave_score, y = malleable_score) +
+  geom_point() +
+  stat_smooth(method = "lm")
+ggplot(data = youtube) +
+  aes(x = parasocial_score, y = malleable_score) +
+  geom_point() +
+  stat_smooth(method = "lm")
+
+# controlling for age, effect holds
+
+# effect of genre - check frequencies first, then mean comparisons, then anova (fixed/mixed effects?)
+# race of Youtuber/particular youtuber
+```
+
+```{r yter race}
+# Favorite YouTuber race
+favorite_coded <- read.csv("favorite_coded.csv")
+
+# Cleaning 
+favorite_youtuber <- inner_join(favorite_coded, youtube, by = join_by(transaction_id)) %>% 
+  rename(yt_gender = Gender) %>% 
+  rename(yt_race = Race.1) %>% 
+  rename(favorite_yt = favorite.x)
+favorite_youtuber <- favorite_youtuber %>% 
+  dplyr::select(favorite_yt, YouTuber, yt_gender, yt_race, gender, race_1, age, Ptime_max_score, malleable_score, regularity_score, h_appear_score, h_behave_score, parasocial_score, composite, race_match_binary) 
+
+favorite_youtuber <- favorite_youtuber %>% 
+  mutate(YouTuber = replace_na(YouTuber, "None")) %>% 
+  mutate(yt_match = ifelse(
+    yt_race == race_1,
+    1, 0)) %>% 
+  mutate(yt_match_all = case_when(
+    yt_match == 1 ~ "Match",
+    yt_match == 0 ~ "Mismatch",
+    TRUE ~ "None"
+  )) %>% 
+  mutate(mrbeast = ifelse(
+    YouTuber == "MrBeast",
+    1, 0)) %>% 
+  mutate(yt_white = ifelse(
+    yt_race == "White",
+    1, 0
+  ))
+
+# Mean centering for regression
+favorite_youtuber <- favorite_youtuber %>%
+  mutate(
+    composite_centered = composite - 0.5,
+    regularity_centered = regularity_score - 0.5,
+    malleable_centered = malleable_score - 0.5
+  )
+
+
+write.csv(favorite_youtuber, "favorite_youtuber.csv")
+```
+
+
+```{r yter race}
+# Descriptive
+ggplot(data = favorite_youtuber) +
+  aes(x = yt_race) + 
+  geom_bar(color = "black", fill = "grey")
+
+
+yt_match_mod <- glm(yt_match ~ Ptime_max_score + age + gender, data = favorite_youtuber, family = binomial)
+summary(yt_match_mod)
+
+t.test(Ptime_max_score ~ mrbeast, data = favorite_youtuber) # significant
+t.test(composite ~ mrbeast, data = favorite_youtuber) # not significant
+t.test(malleable_score ~ mrbeast, data = favorite_youtuber) # not significant
+t.test(regularity_score ~ mrbeast, data = favorite_youtuber) # not significant
+# look at subset of mrbeast = fave
+sum(favorite_youtuber$mrbeast) # 42; is power enough? can we make a meaningful comparison with only 42? look into this
+# mr beast is unique sample - not that he's racist in particular, just that this is a pattern that has emerged
+
+# avg age
+# avg time 
+mrbeast_df <- favorite_youtuber %>% 
+  filter(YouTuber == "MrBeast") 
+# time
+mean(mrbeast_df$Ptime_max_score)
+# skewed right
+ggplot(data = mrbeast_df) +
+  aes(x = Ptime_max_score) + 
+  geom_bar(color = "black", fill = "grey")
+# age
+mean(mrbeast_df$age) # mean = 11.2
+ggplot(data = mrbeast_df) +
+  aes(x = age) + 
+  geom_bar(color = "black", fill = "grey")
+# gender
+ggplot(data = mrbeast_df) +
+  aes(x = gender) + 
+  geom_bar(color = "black", fill = "grey")
+
+# do kids who watch all white youtubers show greater prejudice? fixed beliefs? 
+t.test(malleable_score ~ yt_white, data = favorite_youtuber) # not significant
+t.test(regularity_score ~ yt_white, data = favorite_youtuber) # not significant
+```
+
+```{r friend choice}
+# Race and friend choice
+
+# Logistic regression for race match vs no race match - does amount of time on YouTube predict friend choice 
+# then address gender later 
+
+logit <- youtube %>% 
+  filter(race_match != 2)
+
+match <- glm(race_match_binary ~ Ptime_max_score + age + gender, data = youtube, family = binomial)
+summary(match)
+
+
+# Does race match predict malleability, regularity, or composite? 
+match2 <- glm(malleable_score ~ race_match_binary, data = youtube, family = binomial)
+summary(match2)
+match3 <- glm(regularity_score ~ race_match_binary, data = youtube, family = binomial)
+summary(match3)
+match4 <- glm(composite ~ race_match_binary, data = youtube, family = binomial)
+summary(match4)
+
+t.test(malleable_score ~ race_match_binary, data = youtube)
+t.test(regularity_score ~ race_match_binary, data = youtube)
+t.test(composite ~ race_match_binary, data = youtube)
+
+#Do predict malleability, regularity, or composite predict race match? 
+match2 <- glm(race_match_binary ~ malleable_score, data = youtube, family = binomial)
+summary(match2)
+match3 <- glm(race_match_binary ~ regularity_score, data = youtube, family = binomial)
+summary(match3)
+match4 <- glm(race_match_binary ~ composite, data = youtube, family = binomial)
+summary(match4)
+
+
+
+ggplot(logit) +
+  aes(x = Ptime_max_score, y = race_match) +
+  geom_point(position = position_jitter(height = 0.05), alpha = 0.5) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"), 
+              formula = y ~ x, se = TRUE) 
+
+binom.test(x = sum(youtube$race_match == 1),
+           n = nrow(youtube),
+           p = 0.5,
+           alternative = "greater")  # Use "two.sided" if you're testing any difference
+
+
+```
+
+```{r}
+# Exploratory:
+# Parent opinion
+```
+
+```{r}
+library(boot)
+
+# Your data: df
+# Predictors: time_youtube, racial_regularities
+# Outcome: racial_attitudes
+
+# Define bootstrap function
+boot_fn <- function(data, indices) {
+  d <- data[indices, ]  # resample
+  model <- lm(malleable_score ~ Ptime_max_score + regularity_score, data = youtube)
+  return(coef(model)[c("Ptime_max_score", "regularity_score")])
+}
+
+# Run bootstrap
+set.seed(123)
+results <- boot(data = youtube, statistic = boot_fn, R = 1000)
+
+# Extract bootstrap coefficients
+boot_coefs <- results$t  # matrix: rows = bootstraps, columns = coefficients
+
+# Calculate covariance
+cov(boot_coefs[, 1], boot_coefs[, 2])
+```
+
+```{r}
+library(mediation)
+
+model.m <- lm(regularity_score ~ gender, data = youtube)
+model.y <- lm(malleable_score ~ gender + regularity_score, data = youtube)
+
+med_output <- mediate(model.m, model.y, treat = "gender", mediator = "regularity_score", boot = TRUE)
+summary(med.out)
+
+# Extract estimates
+acme   <- round(med.out$d0, 3)
+ade    <- round(med.out$z0, 3)
+total  <- round(med.out$tau.coef, 3)
+propmed <- round(med.out$n0, 2)
+
+# Extract p-values (formatted APA-style)
+acme_p  <- ifelse(med.out$d0.p < .001, "< .001", paste0("= ", round(med.out$d0.p, 3)))
+ade_p   <- ifelse(med.out$z0.p < .001, "< .001", paste0("= ", round(med.out$z0.p, 3)))
+total_p <- ifelse(med.out$tau.p < .001, "< .001", paste0("= ", round(med.out$tau.p, 3)))
+propmed_p <- ifelse(med.out$n0.p < .001, "< .001", paste0("= ", round(med.out$n0.p, 3)))
+
+```
+
+```{r}
+library(DiagrammeR)
+
+grViz(sprintf("
+digraph mediation {
+
+  graph [layout = dot, rankdir = LR]
+
+  node [shape = box, fontsize = 10, width = 1.1, style = solid]
+
+  X [label = 'IV\\n(gender)']
+  M [label = 'Mediator\\n(regularity_score)']
+  Y [label = 'DV\\n(malleable_score)']
+
+  edge [fontsize = 10]
+
+  X -> M [label = 'a = %.3f\\np %s']
+  M -> Y [label = 'b (implied)']
+  X -> Y [label = 'c′ = %.3f\\np %s']
+
+  # Add total and proportion mediated as a note
+  node [shape = plaintext, fontsize = 9]
+  info [label = 'Total effect = %.3f (p %s)\\nProportion mediated = %.2f (p %s)']
+  info -> Y [style = invis]
+}
+", acme, acme_p, ade, ade_p, total, total_p, propmed, propmed_p))
+```
+
+```{r}
+# 1. Group difference only
+t.test(malleable_score ~ gender, data = youtube)
+
+# 2. Simple regression
+a <- lm(malleable_score ~ gender, data = youtube)
+summary(a)
+
+# 3. With racial regularities added
+b <- lm(malleable_score ~ gender + regularity_score, data = youtube)
+summary(b)
+```
+
+```{r}
+# Favorite YouTuber and regularity
+
+# Anova
+anov2 <- aov(regularity_score ~ yt_match_all, data = favorite_youtuber)
+summary(anov2)
+TukeyHSD(anov2)
+
+# Regression
+lrp_centered <- lm(regularity_score ~ yt_match_all * composite_center + malleable_center, data = favorite_youtuber)
+summary(lrp_centered)
+
+# Plot
+ggplot(data = favorite_youtuber) +
+  aes(x = composite, y = regularity_score) +
+  facet_wrap(~ yt_match_all) +
+  stat_smooth(method = "lm", color = "#800000", linewidth = 0.8, fill = "lightgrey") +
+  geom_point() +
+  my_theme()  
+```
+
+```{r}
+# max
+max_time <- youtube %>% 
+  filter(Ptime_max_score > 15)
+
+maxtest <- lm(malleable_score ~ Ptime_max_score, data = youtube)
+summary(maxtest)
+
+maxtest2 <- lm(regularity_score ~ Ptime_max_score, data = youtube)
+summary(maxtest2)
+```
+```{r}
+#| label: fig-youtuber-descriptive
+#| fig-cap: "Distributions of race/ethnicity of participants and their self-reported favorite YouTubers"
+#| layout-ncol: 2
+#| fig-height: 6
+
+# Stacking two plots
+par(mfrow = c(1, 2))  
+
+# Plot 1: Distribution of participant race/ethnicity
+ggplot(favorite_youtuber) +
+  aes(x = race_1) +
+  geom_bar(fill = "darkgrey", color = "black") + 
+  scale_y_continuous(breaks = seq(from = 0, to = 90, by = 15),
+                     limits = c(0, 90)) +
+  labs(x = "Race/Ethnicity", y = "Count",
+       title = "Participant Race/Ethnicity") +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  my_theme()
+
+# Plot 2: Distribution of favorite youtuber race/ethnicity
+ggplot(favorite_youtuber) +
+  aes(x = yt_race) +
+  geom_bar(fill = "darkgrey", color = "black") + 
+  scale_y_continuous(breaks = seq(from = 0, to = 90, by = 15),
+                     limits = c(0, 90)) +
+  labs(x = "Race/Ethnicity", y = "Count",
+       title = "Race/Ethnicity of Children's Favorite YouTubers") +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  my_theme()
+```
+
+```{r}
+# gender
+lm1 <- lm(composite ~ gender, data = favorite_youtuber)
+summary(lm1)
+lm2 <- lm(composite ~ gender + yt_match_all, data = favorite_youtuber)
+summary(lm2)
+lm3 <- lm(composite ~ gender * yt_match_all, data = favorite_youtuber)
+summary(lm3)
+lm4 <- lm(regularity_score ~ gender, data = favorite_youtuber)
+summary(lm4)
+
+combined_model <- lm(malleable_score ~ gender + yt_match_all + composite + regularity_score, data = favorite_youtuber)
+summary(combined_model)
+
+# Gender as mediator
+# Step 1: Mediator model
+med_model1 <- lm(composite ~ gender, data = favorite_youtuber)
+# Step 2: Outcome model (DV predicted by mediator + gender)
+out_model1 <- lm(malleable_score ~ composite + gender, data = favorite_youtuber)
+# Run mediation analysis
+med_out1 <- mediate(med_model1, out_model1, treat = "gender", mediator = "composite", boot = TRUE)
+
+# Mediator model
+med_model2 <- lm(regularity_score ~ gender, data = favorite_youtuber)
+# Outcome model
+out_model2 <- lm(malleable_score ~ regularity_score + gender, data = favorite_youtuber)
+# Mediation
+med_out2 <- mediate(med_model2, out_model2, treat = "gender", mediator = "regularity_score", boot = TRUE)
+
+
+summary(med_out1)
+summary(med_out2)
+
 ```
 
